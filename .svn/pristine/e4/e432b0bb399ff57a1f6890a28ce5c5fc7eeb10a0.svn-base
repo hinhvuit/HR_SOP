@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<preserve resultType="3" virtualPath="/Account/Login.aspx" hash="fffffffe3a11e3e8" filehash="4394a1e63b3e" flags="110000" assembly="App_Web_llsw1gl0" type="ASP.account_login_aspx">
+    <filedeps>
+        <filedep name="/Account/Login.aspx" />
+    </filedeps>
+</preserve>

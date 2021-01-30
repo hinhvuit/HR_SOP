@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<preserve resultType="3" virtualPath="/ListRegisterPublishDocument.aspx" hash="fffffffe3a11e3e8" filehash="9db8551c7a61a9de" flags="110000" assembly="App_Web_0i0ozioe" type="ASP.listregisterpublishdocument_aspx">
+    <filedeps>
+        <filedep name="/ListRegisterPublishDocument.aspx" />
+        <filedep name="/Site.Master" />
+    </filedeps>
+</preserve>

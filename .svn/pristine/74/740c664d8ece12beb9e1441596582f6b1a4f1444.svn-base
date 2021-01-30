@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<preserve resultType="3" virtualPath="/AutoSendMail.aspx" hash="fffffffe3a11e3e8" filehash="ffffc1ab5961c33f" flags="110000" assembly="App_Web_fcfvdrpq" type="ASP.autosendmail_aspx">
+    <filedeps>
+        <filedep name="/AutoSendMail.aspx" />
+    </filedeps>
+</preserve>

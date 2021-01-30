@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<preserve resultType="3" virtualPath="/ListCheckingNotice.aspx" hash="dec73f136" filehash="763c19d0ee14bdcd" flags="110000" assembly="App_Web_oybrquh2" type="ASP.listcheckingnotice_aspx">
+    <filedeps>
+        <filedep name="/ListCheckingNotice.aspx" />
+        <filedep name="/Site.Master" />
+    </filedeps>
+</preserve>

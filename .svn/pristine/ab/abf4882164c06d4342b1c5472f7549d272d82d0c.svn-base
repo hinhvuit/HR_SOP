@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<preserve resultType="3" virtualPath="/Categorys.aspx" hash="fffffffe3a11e3e8" filehash="d7713c32fec760c9" flags="110000" assembly="App_Web_0i0ozioe" type="ASP.categorys_aspx">
+    <filedeps>
+        <filedep name="/Categorys.aspx" />
+        <filedep name="/Site.Master" />
+    </filedeps>
+</preserve>

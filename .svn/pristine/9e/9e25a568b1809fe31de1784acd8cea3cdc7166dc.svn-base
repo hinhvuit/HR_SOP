@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<preserve resultType="3" virtualPath="/CheckingNotice.aspx" hash="dec73f136" filehash="9aa9ccfedf0688bc" flags="110000" assembly="App_Web_oybrquh2" type="ASP.checkingnotice_aspx">
+    <filedeps>
+        <filedep name="/CheckingNotice.aspx" />
+        <filedep name="/Site.Master" />
+    </filedeps>
+</preserve>

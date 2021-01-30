@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<preserve resultType="3" virtualPath="/ListEditDocument.aspx" hash="fffffffe3a11e3e8" filehash="c7bd3e984fed384e" flags="110000" assembly="App_Web_0i0ozioe" type="ASP.listeditdocument_aspx">
+    <filedeps>
+        <filedep name="/ListEditDocument.aspx" />
+        <filedep name="/Site.Master" />
+    </filedeps>
+</preserve>

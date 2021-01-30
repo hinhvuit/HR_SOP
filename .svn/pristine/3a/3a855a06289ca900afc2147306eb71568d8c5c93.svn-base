@@ -1,0 +1,401 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="HR_SOP.SiteMaster" %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HR SOP</title>
+
+    <!-- Global stylesheets -->
+    <link href="assets/css/icons/icomoon/styles.css" rel="stylesheet" type="text/css">
+    <link href="assets/css/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="assets/css/core.css" rel="stylesheet" type="text/css">
+    <link href="assets/css/components.css" rel="stylesheet" type="text/css">
+    <link href="assets/css/colors.css" rel="stylesheet" type="text/css">
+    <!-- /global stylesheets -->
+
+    <!-- Core JS files -->
+    <script type="text/javascript" src="assets/js/plugins/loaders/pace.min.js"></script>
+    <script type="text/javascript" src="assets/js/core/libraries/jquery.min.js"></script>
+    <script type="text/javascript" src="assets/js/core/libraries/bootstrap.min.js"></script>
+    <script type="text/javascript" src="assets/js/plugins/loaders/blockui.min.js"></script>
+    <!-- /core JS files -->
+
+    <!-- Theme JS files -->
+
+    <script type="text/javascript" src="assets/js/plugins/notifications/jgrowl.min.js"></script>
+    <script type="text/javascript" src="assets/js/plugins/ui/moment/moment.min.js"></script>
+    <script type="text/javascript" src="assets/js/plugins/pickers/daterangepicker.js"></script>
+    <script type="text/javascript" src="assets/js/plugins/pickers/anytime.min.js"></script>
+    <script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.js"></script>
+    <script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.date.js"></script>
+    <script type="text/javascript" src="assets/js/plugins/pickers/pickadate/picker.time.js"></script>
+    <script type="text/javascript" src="assets/js/plugins/pickers/pickadate/legacy.js"></script>
+    <script type="text/javascript" src="assets/js/core/app.js"></script>
+    <script type="text/javascript" src="assets/js/pages/picker_date.js"></script>
+    <script type="text/javascript" src="assets/js/plugins/ui/ripple.min.js"></script>
+
+
+    <script type="text/javascript" src="assets/js/core/libraries/jquery_ui/interactions.min.js"></script>
+    <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
+    <script type="text/javascript" src="assets/js/pages/form_select2.js"></script>
+
+
+    <script type="text/javascript" src="assets/js/plugins/forms/styling/uniform.min.js"></script>
+    <script type="text/javascript" src="assets/js/plugins/forms/styling/switch.min.js"></script>
+    <script type="text/javascript" src="assets/js/pages/form_checkboxes_radios.js"></script>
+
+    <script type="text/javascript" src="assets/js/pages/form_inputs.js"></script>
+
+    <script type="text/javascript" src="assets/js/plugins/forms/validation/validate.min.js"></script>
+    <script type="text/javascript" src="assets/js/plugins/forms/selects/bootstrap_multiselect.js"></script>
+    <script type="text/javascript" src="assets/js/plugins/forms/inputs/touchspin.min.js"></script>
+    <script type="text/javascript" src="assets/js/pages/form_validation.js"></script>
+
+    <script type="text/javascript" src="assets/js/plugins/notifications/bootbox.min.js"></script>
+    <script type="text/javascript" src="assets/js/plugins/notifications/sweet_alert.min.js"></script>
+    <script type="text/javascript" src="assets/js/pages/components_modals.js"></script>
+
+    <script type="text/javascript" src="assets/js/core/libraries/jquery_ui/widgets.min.js"></script>
+    <script type="text/javascript" src="assets/js/core/libraries/jquery_ui/effects.min.js"></script>
+    <script type="text/javascript" src="assets/js/pages/jqueryui_components.js"></script>
+
+    <script type="text/javascript" src="assets/js/pages/components_popups.js"></script>
+
+    <script type="text/javascript" src="assets/js/plugins/loaders/progressbar.min.js"></script>
+    <script type="text/javascript" src="assets/js/pages/components_loaders.js"></script>
+
+    <script type="text/javascript" src="assets/js/plugins/uploaders/fileinput.min.js"></script>
+    <script type="text/javascript" src="assets/js/pages/uploader_bootstrap.js"></script>
+
+    <script type="text/javascript" src="assets/js/plugins/extensions/session_timeout.min.js"></script>
+    <script type="text/javascript" src="assets/js/plugins/ui/prism.min.js"></script>
+
+    <script type="text/javascript" src="assets/js/plugins/forms/styling/switchery.min.js"></script>
+    <script type="text/javascript" src="assets/js/pages/form_input_groups.js"></script>
+
+
+    <!-- /theme JS files -->
+
+    <style type="text/css">
+        .category-title-menu {
+            border-top: 1px solid #808080;
+        }
+       
+    </style>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            GetMenus();
+        });
+
+        function GetMenus() {
+            var currentUrl = $(location).attr('pathname') + '.aspx';
+            $.ajax({
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                url: 'Models/WebServiceDB.asmx/GetMenus',
+                async: true,
+                success: function (data) {
+                    $('#menus').empty();
+                    var html = '';
+                    var g_Name = '';
+                    var index = 0;
+                    $.each($.parseJSON(data.d), function (i, v) {
+                        if (i == 0) {
+                            g_Name = v.Groups_Name;
+                            html = html + '<li id="li_' + v.Groups + '" class="temp category-title-menu">';
+                            html = html + '     <a id="a_' + v.Groups + '"class="has-ul legitRipple" href="javascript:void(0)" style="" value="' + v.Groups + '" onclick="ShowMenu(this);"><i class="icon-book3"></i> <span class="text-bold">' + v.Groups_Name + '</span></a>';
+                            html = html + '     <ul id="' + v.Groups + '" class="hidden-ul" style="">';
+                        }
+                        else {
+                            if (g_Name != v.Groups_Name) {
+                                g_Name = v.Groups_Name;
+                                html = html + '     </ul>';
+                                html = html + '</li>';
+                                index = 1;
+                            }
+                        }
+
+                        if (index == 1) {
+                            html = html + '<li id="li_' + v.Groups + '" class="temp category-title-menu">';
+                            html = html + '     <a id="a_' + v.Groups + '" class="has-ul legitRipple" href="javascript:void(0)" style="" value="' + v.Groups + '" onclick="ShowMenu(this);"><i class="icon-book3"></i> <span class="text-bold">' + v.Groups_Name + '</span></a>';
+                            html = html + '     <ul id="' + v.Groups + '" class="hidden-ul" style="">';
+                        }
+                        index = 0;
+                        if (currentUrl == v.Url) {
+                            html = html + '         <li class="category-title-menu">';
+                            html = html + '             <a class="bg-grey-300" href="' + v.Url + '"> <i class="icon-file-text"></i> <span>' + v.Name + '</span></a>';
+                            html = html + '         </li>';
+                        }
+                        else {
+                            html = html + '         <li class="category-title-menu">';
+                            html = html + '             <a href="' + v.Url + '"> <i class="icon-file-text"></i> <span>' + v.Name + '</span></a>';
+                            html = html + '         </li>';
+                        }
+
+                        if ($.parseJSON(data.d).length == (i + 1)) {
+                            html = html + '     </ul>';
+                            html = html + '</li>';
+                        }
+                    });
+                    html = html + '<li class="category-title-menu"></li>';
+
+                    $('#menus').append(html);
+
+                    $.ajax({
+                        type: 'POST',
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        url: 'Models/WebServiceDB.asmx/GetSession',
+                        async: true,
+                        success: function (data) {
+                            if ($.parseJSON(data.d) == '') {
+                                $('#a_C-00026').attr('class', 'has-ul legitRipple');
+                                $('#C-00026').attr('style', 'display: block;');
+                                $('#li_C-00026').attr('class', 'temp category-title-menu active');
+                            }
+                            else {
+                                $('#a_' + $.parseJSON(data.d)).attr('class', 'has-ul legitRipple');
+                                $('#' + $.parseJSON(data.d)).attr('style', 'display: block;');
+                                $('#li_' + $.parseJSON(data.d)).attr('class', 'temp category-title-menu active');
+                            }
+                        },
+                        error: function (er) {
+                            console.log(er);
+                        }
+                    });
+                },
+                error: function (er) {
+                    console.log(er);
+                }
+            });
+        }
+
+        function ShowMenu(row) {
+
+            $('.has-ul legitRipple').attr('class', '');
+            $('.temp').attr('class', 'temp category-title-menu');
+            $('#a_' + $(row).attr('id')).attr('class', 'has-ul legitRipple');
+
+            var st = $('#' + $(row).attr('value')).attr('style');
+            if (st == null || st == '') {
+                $('.hidden-ul').attr('style', '');
+                $('#' + $(row).attr('value')).attr('style', 'display: block;');
+                $('#li_' + $(row).attr('value')).attr('class', 'temp category-title-menu active');
+                $.ajax({
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    url: 'Models/WebServiceDB.asmx/SetSession',
+                    data: "{ 'Menu': '" + $(row).attr('value') + "'}",
+                    async: true,
+                    success: function (data) {
+                    },
+                    error: function (er) {
+                        console.log(er);
+                    }
+                });
+            }
+            else {
+                $('#' + $(row).attr('value')).attr('style', '');
+                $.ajax({
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    url: 'Models/WebServiceDB.asmx/SetSession',
+                    data: "{ 'Menu': ''}",
+                    async: true,
+                    success: function (data) {
+                    },
+                    error: function (er) {
+                        console.log(er);
+                    }
+                });
+
+            }
+        }
+
+        function ChangePassword() {
+            if ($('#<%=txtPassword.ClientID%>').val() == '') {
+                $('#<%=txtPassword.ClientID%>').focus();
+                bootbox.alert("密碼 / Vui lòng nhập mật khẩu.");
+            }
+            else if ($('#<%=txtRepeatPassword.ClientID%>').val() == '') {
+                $('#<%=txtRepeatPassword.ClientID%>').focus();
+                bootbox.alert("密碼 / Vui lòng nhập mật khẩu.");
+            }
+            else {
+                if ($('#<%=txtPassword.ClientID%>').val() == $('#<%=txtRepeatPassword.ClientID%>').val()) {
+                    $.ajax({
+                        type: 'POST',
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        url: 'Models/WebServiceDB.asmx/ChangePassword',
+                        data: "{ 'MatKhau': '" + $('#<%=txtPassword.ClientID%>').val() + "'}",
+                        async: true,
+                        success: function (data) {
+                            if ($.parseJSON(data.d) == 'SUCCESS') {
+                                location.href = "/Account/Logout.aspx";
+                            }
+                            else {
+                                bootbox.alert("操作過程發生錯誤，請重新操作！ / Lỗi trong quá trình thực hiện, vui lòng thực hiện lại.");
+                            }
+                        },
+                        error: function (er) {
+                            console.log('err');
+                        }
+                    });
+                }
+                else {
+                    $('#<%=txtRepeatPassword.ClientID%>').focus();
+                    bootbox.alert("Mật khẩu không khớp.");
+                }
+            }
+
+    }
+    </script>
+
+</head>
+<body>
+    <form runat="server" class="form-horizontal form-validate-jquery">
+        <!-- Main navbar -->
+        <div id="loader"  class="navbar navbar-inverse bg-indigo">
+            <div class="navbar-header">
+                <a href="Default.aspx">
+                    <%--<span class="text-bold text-size-large">中央周邊文管系統 </span>--%>
+                    <img src="Images/name-system.png" width="350" height="50" alt="" />
+                </a>
+                <ul class="nav navbar-nav visible-xs-block">
+                    <li><a data-toggle="collapse" data-target="#navbar-mobile"><i class="icon-tree5"></i></a></li>
+                    <li><a class="sidebar-mobile-main-toggle"><i class="icon-paragraph-justify3"></i></a></li>
+                </ul>
+            </div>
+            <div class="navbar-collapse collapse" id="navbar-mobile">
+                <ul class="nav navbar-nav">
+                    <li><a class="sidebar-control sidebar-main-toggle hidden-xs"><i class="icon-paragraph-justify3"></i></a></li>
+                </ul>
+                <div class="navbar-right">
+                    <p class="navbar-text">
+                        <asp:Label ID="lblUserName" runat="server" Text="Label"></asp:Label>
+                    </p>
+                    <p class="navbar-text"><span class="label bg-success-400">Online</span></p>
+                </div>
+            </div>
+        </div>
+        <!-- /main navbar -->
+
+        <!-- Page container -->
+        <div class="page-container">
+            <!-- Page content -->
+            <div class="page-content">
+                <!-- Main sidebar -->
+                <div class="sidebar sidebar-main sidebar-default">
+                    <div class="sidebar-content">
+                        <!-- User menu -->
+                        <div class="sidebar-user-material">
+                            <div class="category-content">
+                                <div class="sidebar-user-material-menu">
+                                    <a href="#user-nav" data-toggle="collapse"><span> TÀI KHOẢN / 帳號 </span><i class="caret"></i></a>
+                                </div>
+                            </div>
+
+                            <div class="navigation-wrapper collapse" id="user-nav">
+                                <ul class="navigation">
+                                    <li><a href="Account/Logout.aspx"><i class="icon-switch2"></i><span> ĐĂNG XUẤT / 退出 </span></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- /user menu -->
+                        <!-- Main navigation -->
+                        <div class="sidebar-category sidebar-category-visible">
+                            <div class="category-content no-padding">
+                                <ul id="menus" class="navigation navigation-main navigation-accordion"></ul>
+                            </div>
+                        </div>
+                        <!-- /main navigation -->
+                    </div>
+                </div>
+                <!-- /main sidebar -->
+                <!-- Main content -->
+                <div class="content-wrapper">
+                    <!-- Page header -->
+                    <div class="page-header page-header-default">
+                        <div class="breadcrumb-line">
+                            <ul class="breadcrumb">
+                                <li>
+                                    <a id="ThongBao" href="Default.aspx"><i class="icon-home2 position-left"></i>Home</a>
+                                </li>
+                            </ul>
+                            <ul class="breadcrumb-elements">
+                                <li class="dropdown">
+                                    <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
+                                        <i class="icon-gear position-left"></i> Thiết lập / 設定<span class="caret"></span>
+                                    </a>
+
+
+                                    <ul class="dropdown-menu dropdown-menu-right">
+                                        <li><a href="javascript:void(0)" data-toggle="modal" data-target="#modal_theme_change_password"><i class="icon-user-lock"></i> Thay đổi mật khẩu  <br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 更新密碼</a></li>
+
+                                    </ul>
+
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- /page header -->
+                    <!-- Content area -->
+                    <div class="content">
+
+                        <asp:ContentPlaceHolder ID="MainContent" runat="server">
+                        </asp:ContentPlaceHolder>
+
+                        <!-- Footer -->
+
+                        <div class="footer text-muted">
+                            &copy; 2017. <a href="Default.aspx">Limitless software</a> by <a href="Default.aspx" target="_blank">Foxconn</a>
+                        </div>
+                        <!-- /footer -->
+                    </div>
+                    <!-- /content area -->
+                </div>
+                <!-- /main content -->
+            </div>
+            <!-- /page content -->
+        </div>
+        <!-- /page container -->
+
+        <div id="modal_theme_change_password" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-info">
+                        <a href="javascript:void(0)" class="close" data-dismiss="modal">&times;</a>
+                        <h6 class="modal-title">更新密碼 / Thay đổi mật khẩu</h6>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="control-label col-sm-3 text-bold">密碼 <br /> Mật khẩu</label>
+                            <div class="col-sm-9">
+                                <asp:TextBox ID="txtPassword" runat="server" class="form-control" TextMode="Password" placeholder="Input passwort"></asp:TextBox>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-3 text-bold">確認密碼 <br /> Nhập lại mật khẩu</label>
+                            <div class="col-sm-9">
+                                <asp:TextBox ID="txtRepeatPassword" runat="server" class="form-control" TextMode="Password" placeholder="Input repeat passwort"></asp:TextBox>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="javascript:void(0)" class="btn btn-link" data-dismiss="modal">拒絕 / Từ chối</a>
+                        <a href="javascript:void(0)" class="btn btn-info" onclick="ChangePassword();">存儲 / Lưu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</body>
+</html>

@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<preserve resultType="2" virtualPath="/Models/WebServiceDB.asmx" hash="ef8a447" filehash="ffffdcdb59c1bfdb" flags="130000" assembly="HR_SOP" type="HR_SOP.Models.WebServiceDB">
+    <filedeps>
+        <filedep name="/Models/WebServiceDB.asmx" />
+    </filedeps>
+</preserve>

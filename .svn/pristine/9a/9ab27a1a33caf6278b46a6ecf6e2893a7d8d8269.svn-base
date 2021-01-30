@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<preserve resultType="3" virtualPath="/ListRegisterRenewalsDocument.aspx" hash="dec73f136" filehash="9921f3a559ee1562" flags="110000" assembly="App_Web_tyioofp2" type="ASP.listregisterrenewalsdocument_aspx">
+    <filedeps>
+        <filedep name="/ListRegisterRenewalsDocument.aspx" />
+        <filedep name="/Site.Master" />
+    </filedeps>
+</preserve>
