@@ -274,9 +274,11 @@
                 </ul>
             </div>
             <div class="navbar-collapse collapse" id="navbar-mobile">
-                <ul class="nav navbar-nav">
-                    <li><a class="sidebar-control sidebar-main-toggle hidden-xs"><i class="icon-paragraph-justify3"></i></a></li>
-                </ul>
+                <div class="sidebar-category sidebar-category-visible">
+                    <div class="category-content no-padding">
+                        <ul id="menus" class="navigation navigation-main navigation-accordion"></ul>
+                    </div>
+                </div>
                 <div class="navbar-right">
                     <p class="navbar-text">
                         <asp:Label ID="lblUserName" runat="server" Text="Label"></asp:Label>
@@ -310,11 +312,7 @@
                         </div>
                         <!-- /user menu -->
                         <!-- Main navigation -->
-                        <div class="sidebar-category sidebar-category-visible">
-                            <div class="category-content no-padding">
-                                <ul id="menus" class="navigation navigation-main navigation-accordion"></ul>
-                            </div>
-                        </div>
+                        
                         <!-- /main navigation -->
                     </div>
                 </div>
