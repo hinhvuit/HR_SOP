@@ -100,53 +100,49 @@
                             
                             <div class="col-sm-12">
                                 <div class="text-center">
-                                    <span style="font-size:50px !important;font-weight:bold !important;">越南廠區</span> 
+                                    <span style="font-size:20px !important;font-weight:bold !important;">越南廠區</span> 
                                 </div>
                             </div>
 
                             <div class="col-sm-12">
                                 <div class="text-center">
-                                    <span style="font-size:40px !important;font-weight:bold !important;">中央SOP管理系統</span> 
+                                    <span style="font-size:20px !important;font-weight:bold !important;">中央SOP管理系統</span> 
                                 </div>
                             </div>
 
                             <div class="col-sm-12">
                                 <table class="table table-borderless">
                                     <tr>
-                                        <td colspan="4">
+                                        <td colspan="2">
                                             <div id="error" class="alert alert-danger no-border">
                                                 <span id="error_d" class="text-semibold"></span>
                                             </div>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="col-sm-1"></td>
-                                        <th class="col-sm-2 text-right">
-                                            <span style="font-size:16px !important;font-weight:bold !important;">賬號:</span> 
+                                        <th class="col-sm-4 text-right">
+                                            <span style="font-size:12px !important;font-weight:bold !important;">賬號:</span> 
                                         </th>
                                         <td class="col-sm-8">
                                                 <asp:TextBox ID="txtUsername" runat="server" 
                                                     class="form-control border-bottom-blue-800" 
                                                     placeholder="賬號"></asp:TextBox>
                                         </td>
-                                        <td class="col-sm-1"></td>
                                     </tr>
                                     <tr>
-                                        <td class="col-sm-1"></td>
-                                        <td class="col-sm-2 text-right">
-                                            <span style="font-size:16px !important;font-weight:bold !important;">密碼:</span> 
+                                        <td class="col-sm-4 text-right">
+                                            <span style="font-size:12px !important;font-weight:bold !important;">密碼:</span> 
                                         </td>
                                         <td class="col-sm-8">
                                                 <asp:TextBox ID="txtPassword" runat="server" class="form-control border-bottom-blue-800" 
                                                     placeholder="密碼" TextMode="Password"></asp:TextBox>
                                         </td>
-                                        <td class="col-sm-1"></td>
                                     </tr>
                                     <tr>
                                         <td colspan="4">
                                             <div class="form-group col-sm-6">
                                                 <a href="javascript:void(0)" class="btn btn-default" onclick="Login();">
-                                                   <span style="font-size:18px !important;font-weight:bold !important;">登入 / Đăng nhập</span>
+                                                   <span style="font-size:14px !important;font-weight:bold !important;">登入 / Đăng nhập</span>
                                                 </a>
                                             </div>
                                         </td>

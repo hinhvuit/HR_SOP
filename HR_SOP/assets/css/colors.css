@@ -304,9 +304,9 @@
   color: #fff;
 }
 .bg-blue-300 {
-  background-color: #4FC3F7;
-  border-color: #4FC3F7;
-  color: #fff;
+    border-color: #4FC3F7;
+    color: #fff;
+    background-image: url('../images/backgrounds/hinhnen.jpg');
 }
 .bg-blue-400 {
   background-color: #29B6F6;

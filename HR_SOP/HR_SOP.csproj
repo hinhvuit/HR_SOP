@@ -25,6 +25,7 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -183,6 +184,7 @@
     <Content Include="assets\demo_data\wizard\store_in_database.html" />
     <Content Include="assets\images\backgrounds\boxed_bg.png" />
     <Content Include="assets\images\backgrounds\boxed_bg_retina.png" />
+    <Content Include="assets\images\backgrounds\hinhnen.jpg" />
     <Content Include="assets\images\backgrounds\seamless.png" />
     <Content Include="assets\images\backgrounds\user_bg4.jpg" />
     <Content Include="assets\images\brands\adwords.png" />

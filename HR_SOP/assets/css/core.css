@@ -838,7 +838,11 @@ th {
 }
 .table-borderless > tbody > tr > td,
 .table-borderless > tbody > tr > th {
-  border: 0;
+  border-style: none;
+    border-color: inherit;
+    border-width: 0;
+    top: 94px;
+    left: 196px;
 }
 .table-columned > tbody > tr > td,
 .table-columned > tfoot > tr > td,
@@ -1047,8 +1051,8 @@ textarea {
 .form-group {
   margin-bottom: 20px;
   position: relative;
-    top: 0px;
-    left: 0px;
+    top: 6px;
+    left: 55px;
 }
 .form-group .form-group:last-child {
   margin-bottom: 0;
