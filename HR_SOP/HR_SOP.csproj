@@ -2593,10 +2593,16 @@
     <Content Include="Site.Master" />
     <Content Include="TransferEdit.aspx" />
     <Content Include="Users.aspx" />
+    <None Include="Web References\HRData\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Web References\HRData\YNSafety.disco" />
     <Content Include="Web References\MailFlow\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </Content>
+    <None Include="Web References\HRData\YNSafety.wsdl" />
     <None Include="Web References\MailFlow\SMTPMail.disco" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -2752,11 +2758,13 @@
     </Compile>
     <Compile Include="Models\ConnectionSQL.cs" />
     <Compile Include="Models\DbHelperSQL.cs" />
+    <Compile Include="Models\GetHRData.cs" />
     <Compile Include="Models\LoginSession.cs" />
     <Compile Include="Models\Manager\ApplicationObsoletedDocumentMN.cs" />
     <Compile Include="Models\Manager\CategorysMN.cs" />
     <Compile Include="Models\Manager\CategoryTypeMN.cs" />
     <Compile Include="Models\Manager\CheckingNoticeMN.cs" />
+    <Compile Include="Models\Manager\GetDataInfor.cs" />
     <Compile Include="Models\Manager\HistorySendMailMN.cs" />
     <Compile Include="Models\Manager\MenusMN.cs" />
     <Compile Include="Models\Manager\ModulesMN.cs" />
@@ -2853,6 +2861,11 @@
     <Compile Include="Users.aspx.designer.cs">
       <DependentUpon>Users.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Web References\HRData\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
     <Compile Include="Web References\MailFlow\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -2869,6 +2882,17 @@
     <WebReferences Include="Web References\" />
   </ItemGroup>
   <ItemGroup>
+    <WebReferenceUrl Include="http://10.224.52.12:2002/YNSafety.asmx">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\HRData\</RelPath>
+      <UpdateFromURL>http://10.224.52.12:2002/YNSafety.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>HR_SOP_HRData_YNSafety</CachedSettingsPropName>
+    </WebReferenceUrl>
     <WebReferenceUrl Include="http://10.224.69.33/WebService/Workflow/SMTPMail.asmx">
       <UrlBehavior>Dynamic</UrlBehavior>
       <RelPath>Web References\MailFlow\</RelPath>
@@ -2880,6 +2904,9 @@
       <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
       <CachedSettingsPropName>HR_SOP_MailFlow_SMTPMail</CachedSettingsPropName>
     </WebReferenceUrl>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

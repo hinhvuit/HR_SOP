@@ -518,6 +518,10 @@ namespace HR_SOP.Models
             }
             else
             {
+                /*if (aUsersMN.CheckData(Username))
+                {
+                    aUsersMN.GetDataHR(Username);
+                }*/
                 aInfo = "ERROR";
             }
             return JsonConvert.SerializeObject(aInfo);

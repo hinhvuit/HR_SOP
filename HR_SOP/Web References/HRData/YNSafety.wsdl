@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://10.224.52.12:2002/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://10.224.52.12:2002/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://10.224.52.12:2002/">
+      <s:element name="UserValidate">
+        <s:complexType />
+      </s:element>
+      <s:element name="UserValidateResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="UserValidateResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SoapHead" type="tns:SoapHead" />
+      <s:complexType name="SoapHead">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="UserName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string" />
+        </s:sequence>
+        <s:anyAttribute />
+      </s:complexType>
+      <s:element name="GetEmpInfo_Dt">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="empNo" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetEmpInfo_DtResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetEmpInfo_DtResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetEmpInfo_Json">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="empNo" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetEmpInfo_JsonResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetEmpInfo_JsonResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="UserValidateSoapIn">
+    <wsdl:part name="parameters" element="tns:UserValidate" />
+  </wsdl:message>
+  <wsdl:message name="UserValidateSoapOut">
+    <wsdl:part name="parameters" element="tns:UserValidateResponse" />
+  </wsdl:message>
+  <wsdl:message name="UserValidateSoapHead">
+    <wsdl:part name="SoapHead" element="tns:SoapHead" />
+  </wsdl:message>
+  <wsdl:message name="GetEmpInfo_DtSoapIn">
+    <wsdl:part name="parameters" element="tns:GetEmpInfo_Dt" />
+  </wsdl:message>
+  <wsdl:message name="GetEmpInfo_DtSoapOut">
+    <wsdl:part name="parameters" element="tns:GetEmpInfo_DtResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetEmpInfo_DtSoapHead">
+    <wsdl:part name="SoapHead" element="tns:SoapHead" />
+  </wsdl:message>
+  <wsdl:message name="GetEmpInfo_JsonSoapIn">
+    <wsdl:part name="parameters" element="tns:GetEmpInfo_Json" />
+  </wsdl:message>
+  <wsdl:message name="GetEmpInfo_JsonSoapOut">
+    <wsdl:part name="parameters" element="tns:GetEmpInfo_JsonResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetEmpInfo_JsonSoapHead">
+    <wsdl:part name="SoapHead" element="tns:SoapHead" />
+  </wsdl:message>
+  <wsdl:portType name="YNSafetySoap">
+    <wsdl:operation name="UserValidate">
+      <wsdl:input message="tns:UserValidateSoapIn" />
+      <wsdl:output message="tns:UserValidateSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetEmpInfo_Dt">
+      <wsdl:input message="tns:GetEmpInfo_DtSoapIn" />
+      <wsdl:output message="tns:GetEmpInfo_DtSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetEmpInfo_Json">
+      <wsdl:input message="tns:GetEmpInfo_JsonSoapIn" />
+      <wsdl:output message="tns:GetEmpInfo_JsonSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="YNSafetySoap" type="tns:YNSafetySoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="UserValidate">
+      <soap:operation soapAction="http://10.224.52.12:2002/UserValidate" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:UserValidateSoapHead" part="SoapHead" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetEmpInfo_Dt">
+      <soap:operation soapAction="http://10.224.52.12:2002/GetEmpInfo_Dt" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetEmpInfo_DtSoapHead" part="SoapHead" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetEmpInfo_Json">
+      <soap:operation soapAction="http://10.224.52.12:2002/GetEmpInfo_Json" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetEmpInfo_JsonSoapHead" part="SoapHead" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="YNSafetySoap12" type="tns:YNSafetySoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="UserValidate">
+      <soap12:operation soapAction="http://10.224.52.12:2002/UserValidate" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:UserValidateSoapHead" part="SoapHead" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetEmpInfo_Dt">
+      <soap12:operation soapAction="http://10.224.52.12:2002/GetEmpInfo_Dt" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:GetEmpInfo_DtSoapHead" part="SoapHead" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetEmpInfo_Json">
+      <soap12:operation soapAction="http://10.224.52.12:2002/GetEmpInfo_Json" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:GetEmpInfo_JsonSoapHead" part="SoapHead" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="YNSafety">
+    <wsdl:port name="YNSafetySoap" binding="tns:YNSafetySoap">
+      <soap:address location="http://10.224.52.12:2002/YNSafety.asmx" />
+    </wsdl:port>
+    <wsdl:port name="YNSafetySoap12" binding="tns:YNSafetySoap12">
+      <soap12:address location="http://10.224.52.12:2002/YNSafety.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

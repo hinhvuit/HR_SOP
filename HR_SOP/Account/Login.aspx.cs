@@ -12,6 +12,7 @@ namespace HR_SOP.Account
 {
     public partial class Login : Page
     {
+        
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -47,6 +48,8 @@ namespace HR_SOP.Account
                             }
                             else
                             {
+
+
                                 HttpCookie aCookie = HttpContext.Current.Request.Cookies["Login"];
                                 if (aCookie != null)
                                 {
