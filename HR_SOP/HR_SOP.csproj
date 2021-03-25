@@ -2553,8 +2553,11 @@
     <Content Include="Models\WebServiceDB.asmx" />
     <Content Include="NoPermitsion.aspx" />
     <Content Include="RegisterCancelDocument.aspx" />
+    <Content Include="RegisterCancelSecurity.aspx" />
     <Content Include="RegisterCodeDocument.aspx" />
+    <Content Include="RegisterCodeSecurity.aspx" />
     <Content Include="RegisterEditDocument.aspx" />
+    <Content Include="RegisterEditSecurity.aspx" />
     <Content Include="RegisterPublishDocument.aspx" />
     <Content Include="Roles.aspx" />
     <Content Include="Scripts\bootstrap.js" />
@@ -2761,6 +2764,7 @@
     <Compile Include="Models\GetHRData.cs" />
     <Compile Include="Models\LoginSession.cs" />
     <Compile Include="Models\Manager\ApplicationObsoletedDocumentMN.cs" />
+    <Compile Include="Models\Manager\ApplicationObsoletedSecurityMN.cs" />
     <Compile Include="Models\Manager\CategorysMN.cs" />
     <Compile Include="Models\Manager\CategoryTypeMN.cs" />
     <Compile Include="Models\Manager\CheckingNoticeMN.cs" />
@@ -2769,11 +2773,17 @@
     <Compile Include="Models\Manager\MenusMN.cs" />
     <Compile Include="Models\Manager\ModulesMN.cs" />
     <Compile Include="Models\Manager\PublishReffMN.cs" />
+    <Compile Include="Models\Manager\PublishReffSe.cs" />
     <Compile Include="Models\Manager\RegisterCancelDocumentMN.cs" />
+    <Compile Include="Models\Manager\RegisterCancelSecurityMN.cs" />
     <Compile Include="Models\Manager\RegisterCodeDocumentMN.cs" />
+    <Compile Include="Models\Manager\RegisterCodeSecurityMN.cs" />
     <Compile Include="Models\Manager\RegisterEditDocumentMN.cs" />
+    <Compile Include="Models\Manager\RegisterEditSecurityMN.cs" />
     <Compile Include="Models\Manager\RegisterPublishDocumentMN.cs" />
+    <Compile Include="Models\Manager\RegisterPublishSecurityMN.cs" />
     <Compile Include="Models\Manager\RenewalsDocumentMN.cs" />
+    <Compile Include="Models\Manager\RenewalsSecurityMN.cs" />
     <Compile Include="Models\Manager\RolesMN.cs" />
     <Compile Include="Models\Manager\UserInDepartmentMN.cs" />
     <Compile Include="Models\Manager\UserInPositionMN.cs" />
@@ -2804,6 +2814,13 @@
     <Compile Include="RegisterCancelDocument.aspx.designer.cs">
       <DependentUpon>RegisterCancelDocument.aspx</DependentUpon>
     </Compile>
+    <Compile Include="RegisterCancelSecurity.aspx.cs">
+      <DependentUpon>RegisterCancelSecurity.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RegisterCancelSecurity.aspx.designer.cs">
+      <DependentUpon>RegisterCancelSecurity.aspx</DependentUpon>
+    </Compile>
     <Compile Include="RegisterCodeDocument.aspx.cs">
       <DependentUpon>RegisterCodeDocument.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -2811,12 +2828,26 @@
     <Compile Include="RegisterCodeDocument.aspx.designer.cs">
       <DependentUpon>RegisterCodeDocument.aspx</DependentUpon>
     </Compile>
+    <Compile Include="RegisterCodeSecurity.aspx.cs">
+      <DependentUpon>RegisterCodeSecurity.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RegisterCodeSecurity.aspx.designer.cs">
+      <DependentUpon>RegisterCodeSecurity.aspx</DependentUpon>
+    </Compile>
     <Compile Include="RegisterEditDocument.aspx.cs">
       <DependentUpon>RegisterEditDocument.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="RegisterEditDocument.aspx.designer.cs">
       <DependentUpon>RegisterEditDocument.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RegisterEditSecurity.aspx.cs">
+      <DependentUpon>RegisterEditSecurity.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RegisterEditSecurity.aspx.designer.cs">
+      <DependentUpon>RegisterEditSecurity.aspx</DependentUpon>
     </Compile>
     <Compile Include="RegisterPublishDocument.aspx.cs">
       <DependentUpon>RegisterPublishDocument.aspx</DependentUpon>

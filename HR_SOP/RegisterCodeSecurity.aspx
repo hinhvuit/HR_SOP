@@ -1,8 +1,7 @@
-﻿<%@ Page Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="RegisterCodeDocument.aspx.cs" Inherits="HR_SOP.RegisterCodeDocument" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="RegisterCodeSecurity.aspx.cs" Inherits="HR_SOP.RegisterCodeSecurity" %>
+<asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
-<asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
-
-    <style type="text/css">
+     <style type="text/css">
         .fix {
             width: 20px !important;
             height: 20px !important;
@@ -171,7 +170,7 @@
                                         type: 'POST',
                                         contentType: 'application/json; charset=utf-8',
                                         dataType: 'json',
-                                        url: 'Models/WebServiceDB.asmx/CheckExistDocNo',
+                                        url: 'Models/WebServiceDB.asmx/CheckExistDocNoSe',
                                         data: "{ 'DocNo': '" + $('#<%=txtDCC_NO.ClientID%>').val() + "'}",
                                         async: true,
                                         success: function (data) {
@@ -261,7 +260,7 @@
             type: 'POST',
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
-            url: 'Models/WebServiceDB.asmx/CheckDisplaySubmitCodeDocument',
+            url: 'Models/WebServiceDB.asmx/CheckDisplaySubmitCodeSecurity',
             data: "{ 'CodeDocument': '" + CodeDocumnet + "'}",
             async: true,
             success: function (data) {
@@ -310,7 +309,7 @@ function ShowDoc(row) {
         type: 'POST',
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
-        url: 'Models/WebServiceDB.asmx/CheckExistsFileCodeDocument',
+        url: 'Models/WebServiceDB.asmx/CheckExistsFileCodeSecurity',
         data: "{ 'FileName': '" + $(row).attr('value').trim() + "'}",
         async: true,
         success: function (data) {
@@ -338,7 +337,7 @@ function LoadDocumentRef(CodeDocumnet) {
         type: 'POST',
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
-        url: 'Models/WebServiceDB.asmx/ListDocumentRef',
+        url: 'Models/WebServiceDB.asmx/ListSecurityRef',
         data: "{ 'CodeDocument': '" + CodeDocumnet + "'}",
         async: true,
         success: function (data) {
@@ -407,7 +406,7 @@ function LoadListDCC_Ref(CodeDocumnet) {
         type: 'POST',
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
-        url: 'Models/WebServiceDB.asmx/ListDCC_Ref',
+        url: 'Models/WebServiceDB.asmx/ListDCC_RefSe',
         data: "{ 'CodeDocument': '" + CodeDocumnet + "','Status':''}",
         async: true,
         success: function (data) {
@@ -533,7 +532,7 @@ function Luu() {
             type: 'POST',
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
-            url: 'Models/WebServiceDB.asmx/InsertOrUpdateRegisterCodeDocument',
+            url: 'Models/WebServiceDB.asmx/InsertOrUpdateRegisterCodeSecurity',
             data: "{ 'ID': '" + $('#<%=hidID.ClientID%>').val() + "', 'CodeDocument': '" + $('#<%=txtApplicationNO.ClientID%>').val() + "', 'ApplicationSite': '" + $('#<%=ddlApplicationSite.ClientID%>').val()
                + "', 'sEffectiveDate': '" + $('#<%=txtEffectiveDate.ClientID%>').val() + "', 'DocumentType': '', 'ReasonApplication': '"
                + $('#<%=txtReasonApplication.ClientID%>').val() + "', 'ApplicableSite': '" + ApplicableSite + "', 'ApplicableBU': '" + ApplicableBU + "', 'sApplicationDate': '"
@@ -558,7 +557,7 @@ function Luu() {
                     },
                     function (isConfirm) {
                         if (isConfirm) {
-                            location.href = 'RegisterCodeDocument.aspx?CodeDocument=' + $.parseJSON(data.d);
+                            location.href = 'RegisterCodeSecurity.aspx?CodeDocument=' + $.parseJSON(data.d);
                         }
                     });
                 }
@@ -576,7 +575,7 @@ function ListApprovalSection(CodeDocument) {
         type: 'POST',
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
-        url: 'Models/WebServiceDB.asmx/ListApprovalSection',
+        url: 'Models/WebServiceDB.asmx/ListApprovalSectionSe',
         data: "{ 'CodeDocument': '" + CodeDocument + "'}",
         async: true,
         success: function (data) {
@@ -653,13 +652,13 @@ function XacNhan() {
                     type: 'POST',
                     contentType: 'application/json; charset=utf-8',
                     dataType: 'json',
-                    url: 'Models/WebServiceDB.asmx/AcceptRegisterCodeDocument',
+                    url: 'Models/WebServiceDB.asmx/AcceptRegisterCodeSecurity',
                     data: "{ 'CodeDocument': '" + $('#<%=hidCodeDocument.ClientID%>').val() + "','States': '" + $('#<%=hidStates.ClientID%>').val()
                                 + "','Comment': '" + isConfirm + "','Url':'" + $(location).attr('href') + "','Ref':'" + $('#ContentDCC_Ref').html() + "'}",
                     async: true,
                     success: function (data) {
                         if ($.parseJSON(data.d) == 'SUCCESS') {
-                            location.href = "ListCodeDocument.aspx";
+                            location.href = "ListCodeSecurity.aspx";
                         }
                         else {
                             swal({
@@ -712,13 +711,13 @@ function HuyBo() {
                 type: 'POST',
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
-                url: 'Models/WebServiceDB.asmx/DeletedRegisterCodeDocument',
+                url: 'Models/WebServiceDB.asmx/DeletedRegisterCodeSecurity',
                 data: "{ 'ID': '" + $('#<%=hidID.ClientID%>').val() + "'}",
                 async: true,
                 success: function (data) {
                     $(light).unblock();
                     if ($.parseJSON(data.d) == 'SUCCESS') {
-                        location.href = "ListCodeDocument.aspx";
+                        location.href = "ListCodeSecurity.aspx";
                     }
                     else {
                         bootbox.alert("操作過程發生錯誤，請重新操作！ / Lỗi trong quá trình thực hiện, vui lòng thực hiện lại!");
@@ -777,13 +776,13 @@ function TuChoi() {
                     type: 'POST',
                     contentType: 'application/json; charset=utf-8',
                     dataType: 'json',
-                    url: 'Models/WebServiceDB.asmx/RejectRegisterCodeDocument',
+                    url: 'Models/WebServiceDB.asmx/RejectRegisterCodeSecurity',
                     data: "{ 'CodeDocument': '" + $('#<%=hidCodeDocument.ClientID%>').val() + "','Comment': '" + isConfirm + "','Url':'" + $(location).attr('href') + "'}",
                     async: true,
                     success: function (data) {
                         $(light).unblock();
                         if ($.parseJSON(data.d) == 'SUCCESS') {
-                            location.href = "ListCodeDocument.aspx";
+                            location.href = "ListCodeSecurity.aspx";
                         }
                         else {
                             bootbox.alert("操作過程發生錯誤，請重新操作！ / Lỗi trong quá trình thực hiện, vui lòng thực hiện lại!");
@@ -1024,7 +1023,7 @@ function TuChoi() {
                <%-- <asp:HiddenField ID="hidApplicableBU" runat="server" />--%>
 
                 <a id="btnLuu" href="javascript:void(0)" class="btn bg-green btn-rounded width-200" onclick="Luu();"><i class="icon-add position-left"></i>存儲 / Lưu</a>
-                <a id="btnLamLai" href="RegisterCodeDocument.aspx" class="btn bg-danger btn-rounded width-200"><i class="icon-cancel-circle2 position-left"></i>重置 / Làm lại</a>
+                <a id="btnLamLai" href="RegisterCodeSecurity.aspx" class="btn bg-danger btn-rounded width-200"><i class="icon-cancel-circle2 position-left"></i>重置 / Làm lại</a>
 
                 <a id="btnXacNhan" href="javascript:void(0)" class="btn bg-pink btn-rounded width-200" onclick="XacNhan();">確認 / Xác nhận</a>
                 <a id="btnHuyBo" href="javascript:void(0)" class="btn bg-danger btn-rounded width-200" onclick="HuyBo();">取消 / Hủy bỏ</a>
@@ -1117,5 +1116,6 @@ function TuChoi() {
             </tr>
         </table>
     </div>
+
 
 </asp:Content>

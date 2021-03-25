@@ -600,7 +600,7 @@ namespace HR_SOP.Models
 
         [WebMethod]
         public string InsertOrUpdateRegisterCodeDocument(string ID, string CodeDocument, string ApplicationSite, string sEffectiveDate, string DocumentType,
-            string ReasonApplication, string ApplicableSite, string ApplicableBU, string sApplicationDate, string Ref, string Department)
+            string ReasonApplication, string ApplicableSite, string ApplicableBU, string sApplicationDate, string Ref, string Department,string IsSe)
         {
             DateTime EffectiveDate = String.IsNullOrEmpty(sEffectiveDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(sEffectiveDate);
             DateTime ApplicationDate = String.IsNullOrEmpty(sApplicationDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(sApplicationDate);
@@ -619,7 +619,7 @@ namespace HR_SOP.Models
 
             string aInfo = "ERROR";
             int aNum = aRegisterCodeDocumentMN.InsertOrUpdateRegisterCodeDocument(ID, CodeDocument, LoginSession.UserName(), ApplicationSite, EffectiveDate,
-            DocumentType, ReasonApplication, ApplicableSite, ApplicableBU, ApplicationDate, "A01", string.Empty, Department);
+            DocumentType, ReasonApplication, ApplicableSite, ApplicableBU, ApplicationDate, "A01", string.Empty, Department,IsSe);
             if (aNum > 0)
             {
                 aNum = aRegisterCodeDocumentMN.InsertApprovalSection(CodeDocument, LoginSession.UserName(), Department);
@@ -3295,6 +3295,2332 @@ namespace HR_SOP.Models
         public string CheckDisplaySubmitRenewalsDocument(string RenewalCode)
         {
             return JsonConvert.SerializeObject(aRenewalsDocumentMN.CheckDisplaySubmitRenewalsDocument(RenewalCode));
+        }
+
+        #endregion
+
+        #region RegisterCodeSecurity
+        RegisterCodeSecurityMN aRegisterCodeSecurityMN = new RegisterCodeSecurityMN();
+
+        [WebMethod]
+        public string ListRegisterCodeSecurity(string CodeDocument, string CreatedBy, string States, string CheckWait, string Type,
+           string Department, string DocNo, string DocName, string fApplicationDate, string tApplicationDate)
+        {
+            DateTime FromApplicationDate = String.IsNullOrEmpty(fApplicationDate) ? Convert.ToDateTime("1901/01/01") : Convert.ToDateTime(fApplicationDate);
+            DateTime ToApplicationDate = String.IsNullOrEmpty(tApplicationDate) ? Convert.ToDateTime("1901/01/01") : Convert.ToDateTime(tApplicationDate);
+
+            return JsonConvert.SerializeObject(aRegisterCodeSecurityMN.ListRegisterCodeDocument(CodeDocument, CreatedBy, States, CheckWait, Type,
+               Department, DocNo, DocName, FromApplicationDate, ToApplicationDate));
+        }
+
+        [WebMethod]
+        public string InsertOrUpdateRegisterCodeSecurity(string ID, string CodeDocument, string ApplicationSite, string sEffectiveDate, string DocumentType,
+            string ReasonApplication, string ApplicableSite, string ApplicableBU, string sApplicationDate, string Ref, string Department, string IsSe)
+        {
+            DateTime EffectiveDate = String.IsNullOrEmpty(sEffectiveDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(sEffectiveDate);
+            DateTime ApplicationDate = String.IsNullOrEmpty(sApplicationDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(sApplicationDate);
+            if (String.IsNullOrEmpty(ID))
+            {
+
+                CategorysMN aCategorysMN = new CategorysMN();
+                DataTable aData = aCategorysMN.ListCategorys(ApplicationSite, string.Empty, "CT-00003");
+                string MaXuong = string.Empty;
+                if (aData.Rows.Count > 0)
+                {
+                    MaXuong = Convert.ToString(aData.Rows[0]["Code"]);
+                }
+                CodeDocument = "SOP-A-" + MaXuong + DateTime.Now.Year.ToString() + Utils.GetCodeAuto("CodeDocument", "RegisterCodeDocument");
+            }
+
+            string aInfo = "ERROR";
+            int aNum = aRegisterCodeSecurityMN.InsertOrUpdateRegisterCodeDocument(ID, CodeDocument, LoginSession.UserName(), ApplicationSite, EffectiveDate,
+            DocumentType, ReasonApplication, ApplicableSite, ApplicableBU, ApplicationDate, "A01", string.Empty, Department, IsSe);
+            if (aNum > 0)
+            {
+                aNum = aRegisterCodeSecurityMN.InsertApprovalSection(CodeDocument, LoginSession.UserName(), Department);
+                if (aNum > 0)
+                {
+                    aInfo = "SUCCESS";
+                    DataTable aTemp = aRegisterCodeSecurityMN.ListDocumentRef(CodeDocument);
+                    for (int i = 0; i < aTemp.Rows.Count; i++)
+                    {
+                        DeleteFileCodeDoc(Convert.ToString(aTemp.Rows[i]["FileName"]).Trim());
+                    }
+                    aNum = aRegisterCodeSecurityMN.DeleteDocumentRef(CodeDocument);
+                    if (aNum > 0)
+                    {
+                        aInfo = "SUCCESS";
+                        #region
+                        string DocumentName = string.Empty;
+                        string FileName = string.Empty;
+                        string AssignedRevisor = string.Empty;
+                        DateTime EstimatedCloseDate = Convert.ToDateTime("1900/01/01");
+                        int index = 0;
+                        int OrderBy = 0;
+
+                        Ref = "<table>" + Ref + "</table>";
+                        System.Xml.XmlDocument xd = new System.Xml.XmlDocument();
+                        xd.LoadXml(Ref);
+                        System.Xml.XmlNodeList nodeList_tr = xd.GetElementsByTagName("tr");
+                        foreach (System.Xml.XmlNode node_tr in nodeList_tr)
+                        {
+                            OrderBy++;
+                            index = 0;
+                            System.Xml.XmlNodeList nodeList_td = node_tr.SelectNodes("td");
+                            foreach (System.Xml.XmlNode notde_td in nodeList_td)
+                            {
+                                if (index == 0)
+                                {
+                                    index++;
+                                }
+                                else if (index == 1)
+                                {
+                                    DocumentName = notde_td.InnerText;
+                                    index++;
+                                }
+                                else if (index == 2)
+                                {
+                                    FileName = notde_td.InnerText;
+                                    index++;
+                                }
+                                //else if (index == 3)
+                                //{
+                                //    AssignedRevisor = notde_td.InnerText;
+                                //    index++;
+                                //}
+                                else if (index == 3)
+                                {
+                                    EstimatedCloseDate = String.IsNullOrEmpty(notde_td.InnerText.Trim()) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(notde_td.InnerText.Trim());
+                                    index++;
+                                }
+                                else
+                                {
+                                    continue;
+                                }
+                            }
+                            aRegisterCodeSecurityMN.InsertDocumentRef(DocumentName, FileName, AssignedRevisor, EstimatedCloseDate, LoginSession.UserName(), CodeDocument, OrderBy);
+                        }
+                        #endregion
+                    }
+                    else
+                    {
+                        aInfo = "ERROR";
+                    }
+                }
+                else
+                {
+                    aInfo = "ERROR";
+                }
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+
+            if (aInfo.Equals("SUCCESS"))
+            {
+                aInfo = CodeDocument;
+            }
+
+            return JsonConvert.SerializeObject(aInfo); ;
+        }
+
+        [WebMethod]
+        public string DeletedRegisterCodeSecurity(string ID)
+        {
+            string aInfo = string.Empty;
+            int aNum = aRegisterCodeSecurityMN.DeletedRegisterCodeDocument(ID, LoginSession.UserName());
+            if (aNum > 0)
+            {
+                aInfo = "SUCCESS";
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+            return JsonConvert.SerializeObject(aInfo);
+        }
+
+        [WebMethod]
+        public string AcceptRegisterCodeSecurity(string CodeDocument, string States, string Comment, string Url, string Ref)
+        {
+            #region
+            UsersMN aUsersMN = new UsersMN();
+            string aInfo = string.Empty;
+            int aNum = 0;
+            if (States.Equals("A01"))
+            {
+                DataTable aCheck = aUsersMN.CheckLevel(LoginSession.UserName());
+                if (aCheck.Rows.Count > 0)
+                {
+                    string Position = aCheck.Rows[0]["Position"].ToString().Trim();
+                    if (Position.Equals("TT"))
+                    {
+                        States = "A05";
+                    }
+                    else if (Position.Equals("TP"))
+                    {
+                        States = "A10";
+                    }
+                    else
+                    {
+                        States = "A03";
+                    }
+                }
+                else
+                {
+                    States = "A03";
+                }
+
+            }
+            else if (States.Equals("A03"))
+            {
+                int TS = aRegisterCodeSecurityMN.CheckApprovalSection_Code(CodeDocument, States);
+                if (TS > 1)
+                {
+                    States = "A03";
+                }
+                else
+                {
+                    States = "A05";
+                }
+            }
+            else if (States.Equals("A05"))
+            {
+                int TS = aRegisterCodeSecurityMN.CheckApprovalSection_Code(CodeDocument, States);
+                if (TS > 1)
+                {
+                    States = "A05";
+                }
+                else
+                {
+                    States = "A10";
+                }
+            }
+            else if (States.Equals("A10"))
+            {
+                States = "A15";
+            }
+            #endregion
+
+            aNum = aRegisterCodeSecurityMN.AcceptRegisterCodeDocument(CodeDocument, LoginSession.UserName(), States);
+            if (aNum > 0)
+            {
+                #region
+                //Status = C-00010  : Da ky
+                aNum = aRegisterCodeSecurityMN.UpdateApprovalSection(CodeDocument, LoginSession.UserName(), Comment, "C-00010");
+                if (aNum > 0)
+                {
+                    aInfo = "SUCCESS";
+                    #region Gui email
+
+                    string ToEmail = string.Empty;
+                    string BCC = string.Empty;
+                    string Status = string.Empty;
+                    string Contents = string.Empty;
+                    string Title = string.Empty;
+
+                    HistorySendMailMN aHistorySendMailMN = new HistorySendMailMN();
+
+                    DataTable aTemp = aRegisterCodeSecurityMN.CheckListSendMail_Code(CodeDocument);
+                    for (int i = 0; i < aTemp.Rows.Count; i++)
+                    {
+                        string UserName = Convert.ToString(aTemp.Rows[i]["UserName"]);
+                        DataTable aData = aUsersMN.ListUsers(UserName, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "0");
+                        for (int j = 0; j < aData.Rows.Count; j++)
+                        {
+                            string HoTen = Convert.ToString(aData.Rows[j]["HoTen"]);
+                            if (States.Equals("A15"))
+                            {
+                                Utils.ContentSendMail_Accept(CodeDocument, Url, HoTen, UserName, ref Title, ref Contents);
+                            }
+                            else
+                            {
+                                Utils.ContentSendMail_WaitSign(CodeDocument, Url, HoTen, UserName, ref Title, ref Contents);
+                            }
+
+                            ToEmail = Convert.ToString(aData.Rows[j]["Email"]);
+                            bool bS = Utils.SendMail(ToEmail, BCC, BCC, Title, Contents);
+
+                            Status = bS ? "SUCCESS" : "ERRER";
+                            ToEmail = ToEmail + "___" + UserName;
+
+                            aHistorySendMailMN.InsertHistorySendMail(CodeDocument, ToEmail, BCC, Status, Contents, Title, LoginSession.UserName());
+
+                        }
+                    }
+                    #endregion
+                }
+                else
+                {
+                    aInfo = "ERROR";
+                }
+                #endregion
+
+                #region
+                if (States.Equals("A15"))
+                {
+                    #region
+                    string DocNo = string.Empty; string DocName = string.Empty; int OrderBy = 0; string ID_DocumentRef = string.Empty;
+                    int index = 0;
+
+                    Ref = "<table>" + Ref + "</table>";
+                    System.Xml.XmlDocument xd = new System.Xml.XmlDocument();
+                    xd.LoadXml(Ref);
+                    System.Xml.XmlNodeList nodeList_tr = xd.GetElementsByTagName("tr");
+                    foreach (System.Xml.XmlNode node_tr in nodeList_tr)
+                    {
+                        OrderBy++;
+                        index = 0;
+                        System.Xml.XmlNodeList nodeList_td = node_tr.SelectNodes("td");
+                        foreach (System.Xml.XmlNode notde_td in nodeList_td)
+                        {
+                            if (index == 0)
+                            {
+                                ID_DocumentRef = notde_td.Attributes["value"].Value;
+                                index++;
+                            }
+                            else if (index == 1)
+                            {
+
+                                DocNo = notde_td.InnerText;
+                                index++;
+                            }
+                            else if (index == 2)
+                            {
+                                DocName = notde_td.InnerText;
+                                index++;
+                            }
+                            else
+                            {
+
+                                continue;
+                            }
+                        }
+                        aRegisterCodeSecurityMN.InsertDCC_Ref(DocNo, DocName, LoginSession.UserName(), CodeDocument, OrderBy, ID_DocumentRef);
+                    }
+                    #endregion
+                }
+                #endregion
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+            return JsonConvert.SerializeObject(aInfo);
+        }
+
+        [WebMethod]
+        public string RejectRegisterCodeSecurity(string CodeDocument, string Comment, string Url)
+        {
+            string aInfo = string.Empty;
+            int aNum = 0;
+            //States = A20 : Lam lai don
+            aNum = aRegisterCodeSecurityMN.RejectRegisterCodeDocument(CodeDocument, LoginSession.UserName(), "A20");
+            if (aNum > 0)
+            {
+                //Status = C-00011  : Tu choi
+                aNum = aRegisterCodeSecurityMN.UpdateApprovalSection(CodeDocument, LoginSession.UserName(), Comment, "C-00011");
+                if (aNum > 0)
+                {
+                    aInfo = "SUCCESS";
+                    #region
+
+                    string ToEmail = string.Empty;
+                    string BCC = string.Empty;
+                    string Status = string.Empty;
+                    string Contents = string.Empty;
+                    string Title = string.Empty;
+
+
+                    HistorySendMailMN aHistorySendMailMN = new HistorySendMailMN();
+                    UsersMN aUsersMN = new UsersMN();
+                    DataTable aTemp = aRegisterCodeSecurityMN.CheckListSendMail_Code(CodeDocument);
+                    for (int i = 0; i < aTemp.Rows.Count; i++)
+                    {
+                        string UserName = Convert.ToString(aTemp.Rows[i]["UserName"]);
+                        DataTable aData = aUsersMN.ListUsers(UserName, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "0");
+                        for (int j = 0; j < aData.Rows.Count; j++)
+                        {
+                            string HoTen = Convert.ToString(aData.Rows[j]["HoTen"]);
+                            Utils.ContentSendMail_Reject(CodeDocument, Url, HoTen, UserName, ref Title, ref Contents);
+                            ToEmail = Convert.ToString(aData.Rows[j]["Email"]);
+                            bool bS = Utils.SendMail(ToEmail, BCC, BCC, Title, Contents);
+                            Status = bS ? "SUCCESS" : "ERRER";
+                            ToEmail = ToEmail + "___" + UserName;
+
+                            aHistorySendMailMN.InsertHistorySendMail(CodeDocument, ToEmail, BCC, Status, Contents, Title, LoginSession.UserName());
+
+                        }
+                    }
+                    #endregion
+                }
+                else
+                {
+                    aInfo = "ERROR";
+                }
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+            return JsonConvert.SerializeObject(aInfo);
+        }
+
+        [WebMethod]
+        public string DeleteSecurityRef(string CodeDocument)
+        {
+            string aInfo = string.Empty;
+            int aNum = aRegisterCodeSecurityMN.DeleteDocumentRef(CodeDocument);
+            if (aNum > 0)
+            {
+                aInfo = "SUCCESS";
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+            return JsonConvert.SerializeObject(aInfo);
+        }
+
+        [WebMethod]
+        public string ListSecurityRef(string CodeDocument)
+        {
+            return JsonConvert.SerializeObject(aRegisterCodeSecurityMN.ListDocumentRef(CodeDocument));
+        }
+
+        [WebMethod]
+        public string ListApprovalSectionSe(string CodeDocument)
+        {
+            return JsonConvert.SerializeObject(aRegisterCodeSecurityMN.ListApprovalSection(CodeDocument));
+        }
+
+        [WebMethod]
+        public string InsertApprovalSectionSe(string CodeDocument, string UserName, string Department)
+        {
+            string aInfo = string.Empty;
+            int aNum = aRegisterCodeSecurityMN.InsertApprovalSection(CodeDocument, UserName, Department);
+            if (aNum > 0)
+            {
+                aInfo = "SUCCESS";
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+            return JsonConvert.SerializeObject(aInfo);
+        }
+
+        [WebMethod]
+        public string CheckDisplaySubmitCodeSecurity(string CodeDocument)
+        {
+            return JsonConvert.SerializeObject(aRegisterCodeSecurityMN.CheckDisplaySubmitCodeDocument(CodeDocument));
+        }
+
+        [WebMethod]
+        public string ListDCC_RefSe(string CodeDocument, string Status)
+        {
+            return JsonConvert.SerializeObject(aRegisterCodeSecurityMN.ListDCC_Ref(CodeDocument, Status));
+        }
+
+        [WebMethod]
+        public string CheckExistDocNoSe(string DocNo)
+        {
+            return JsonConvert.SerializeObject(aRegisterCodeSecurityMN.CheckExistDocNo(DocNo));
+        }
+
+        [WebMethod]
+        public string ListRegisterCodeSecurityByDCC(string CodeDocument, string DocNo, string StatusDCC,
+            string fApplicationDate, string tApplicationDate)
+        {
+            DateTime FromApplicationDate = String.IsNullOrEmpty(fApplicationDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(fApplicationDate);
+            DateTime ToApplicationDate = String.IsNullOrEmpty(tApplicationDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(tApplicationDate);
+
+            return JsonConvert.SerializeObject(aRegisterCodeSecurityMN.ListRegisterCodeDocumentByDCC(CodeDocument, LoginSession.UserName(), DocNo, StatusDCC,
+                FromApplicationDate, ToApplicationDate));
+        }
+
+        [WebMethod]
+        public string ListSearchSecurity(string DocName, string CreatedBy, string DocNo, string StatusDCC,
+            string fApplicationDate, string tApplicationDate)
+        {
+            DateTime FromApplicationDate = String.IsNullOrEmpty(fApplicationDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(fApplicationDate);
+            DateTime ToApplicationDate = String.IsNullOrEmpty(tApplicationDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(tApplicationDate);
+
+            return JsonConvert.SerializeObject(aRegisterCodeSecurityMN.ListSearchDocument(DocName, CreatedBy, DocNo, StatusDCC,
+                FromApplicationDate, ToApplicationDate));
+        }
+
+        [WebMethod]
+        public string ListCheckWaitSe(string Code, string Dcc, string Department, string CheckWait, string CreatedBy,
+            string sFromDate, string sToDate, string Type)
+        {
+            DateTime FromDate = String.IsNullOrEmpty(sFromDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(sFromDate);
+            DateTime ToDate = String.IsNullOrEmpty(sToDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(sToDate);
+
+            return JsonConvert.SerializeObject(aRegisterCodeSecurityMN.ListCheckWait(Code, Dcc, Department, CheckWait, CreatedBy, FromDate, ToDate, Type));
+        }
+
+        [WebMethod]
+        public string CheckExistsFileCodeSecurity(string FileName)
+        {
+            try
+            {
+                FileName = FileName.Trim();
+                string filePath = string.Empty;
+                filePath = Server.MapPath("~/Updatafile/CodeDoc/" + FileName);
+                if (System.IO.File.Exists(filePath))
+                {
+                    return JsonConvert.SerializeObject("EXISTED");
+                }
+                return JsonConvert.SerializeObject("NOT_EXISTED");
+            }
+            catch (Exception ex)
+            {
+                ex.ToString();
+                return JsonConvert.SerializeObject("ERROR");
+            }
+        }
+
+        #endregion
+
+        #region RegisterPublishSecurity
+        RegisterPublishSecurityMN aRegisterPublishSecurityMN = new RegisterPublishSecurityMN();
+
+        [WebMethod]
+        public string ListRegisterPublishSecurity(string PublishDocument, string CreatedBy, string States, string CheckWait,
+            string DocumentNo, string DocumentName, string IndexWord, string Department, string fApplicationDate, string tApplicationDate)
+        {
+            DateTime FromApplicationDate = String.IsNullOrEmpty(fApplicationDate) ? Convert.ToDateTime("1901/01/01") : Convert.ToDateTime(fApplicationDate);
+            DateTime ToApplicationDate = String.IsNullOrEmpty(tApplicationDate) ? Convert.ToDateTime("1901/01/01") : Convert.ToDateTime(tApplicationDate);
+            return JsonConvert.SerializeObject(aRegisterPublishSecurityMN.ListRegisterPublishDocument(PublishDocument, CreatedBy, States, CheckWait,
+                DocumentNo, DocumentName, IndexWord, Department, FromApplicationDate, ToApplicationDate));
+        }
+
+        [WebMethod]
+        public string ListRegisterPublishSecurityByType(string PublishDocument, string Type, string DCC, string fApplicationDate, string tApplicationDate)
+        {
+            PublishDocument = PublishDocument.Trim();
+            DCC = DCC.Trim();
+            DateTime FromApplicationDate = String.IsNullOrEmpty(fApplicationDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(fApplicationDate);
+            DateTime ToApplicationDate = String.IsNullOrEmpty(tApplicationDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(tApplicationDate);
+            return JsonConvert.SerializeObject(aRegisterPublishSecurityMN.ListRegisterPublishDocumentByType(PublishDocument, LoginSession.UserName(), Type, DCC, FromApplicationDate, ToApplicationDate));
+        }
+
+        [WebMethod]
+        public string InsertOrUpdateRegisterPublishSecurity(string ID, string PublishDocument, string ApplicationSite, string sEffectiveDate, string DocumentNo,
+            string Rev, string DocumentName, string DocumentType, string RevisionApplication, string CheckingNotice,
+            string DeletedDocumentOld, string ReferenceDocument, string IndexWord, string ContentFile, string ContentFile_old, string PublishReff,
+            string ApplicableSite, string ApplicableBU, string NeedReleaseFile, string NeedReleaseFile_old, string sApplicationDate,
+            string DepartmentCheck, string CodeDocument, string Department)
+        {
+
+
+            DateTime EffectiveDate = String.IsNullOrEmpty(sEffectiveDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(sEffectiveDate);
+            DateTime ApplicationDate = String.IsNullOrEmpty(sApplicationDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(sApplicationDate);
+
+            if (String.IsNullOrEmpty(ID))
+            {
+
+                CategorysMN aCategorysMN = new CategorysMN();
+                DataTable aData = aCategorysMN.ListCategorys(ApplicationSite, string.Empty, "CT-00003");
+                string MaXuong = string.Empty;
+                if (aData.Rows.Count > 0)
+                {
+                    MaXuong = Convert.ToString(aData.Rows[0]["Code"]);
+                }
+                PublishDocument = "SOP-C-" + MaXuong + DateTime.Now.Year.ToString() + Utils.GetCodeAuto("PublishDocument", "RegisterPublishDocument");
+            }
+            else
+            {
+                if (!String.IsNullOrEmpty(ContentFile))
+                {
+                    if (!String.IsNullOrEmpty(ContentFile_old))
+                    {
+                        DeleteFilePublishSecurity(ContentFile_old);
+                    }
+                }
+                ContentFile = String.IsNullOrEmpty(ContentFile) ? ContentFile_old : ContentFile;
+
+                if (!String.IsNullOrEmpty(NeedReleaseFile))
+                {
+                    if (!String.IsNullOrEmpty(NeedReleaseFile_old))
+                    {
+                        DeleteFilePublishSeNeed(NeedReleaseFile_old);
+                    }
+                }
+                NeedReleaseFile = String.IsNullOrEmpty(NeedReleaseFile) ? NeedReleaseFile_old : NeedReleaseFile;
+            }
+
+            string aInfo = "ERROR";
+            int aNum = aRegisterPublishSecurityMN.InsertOrUpdateRegisterPublishDocument(ID, PublishDocument, LoginSession.UserName(), ApplicationSite, EffectiveDate, DocumentNo,
+             Rev, DocumentName, DocumentType, RevisionApplication, CheckingNotice, DeletedDocumentOld, ReferenceDocument, IndexWord,
+             ContentFile, string.Empty, ApplicableSite, ApplicableBU, NeedReleaseFile, string.Empty, "C01", string.Empty, ApplicationDate, DepartmentCheck, CodeDocument, Department);
+            if (aNum > 0)
+            {
+
+                //string from = System.IO.Path.Combine(Server.MapPath("~/Updatafile/CodeDoc/"), ContentFile);
+                //string to = System.IO.Path.Combine(Server.MapPath("~/Updatafile/PublishDoc/"), ContentFile);
+                //if (System.IO.File.Exists(to))
+                //{
+                //    try
+                //    {
+                //        System.IO.File.Delete(to);
+                //    }
+                //    catch (System.IO.IOException ex)
+                //    {
+                //        ex.ToString();
+                //    }
+                //}
+
+                //if (System.IO.File.Exists(from))
+                //{ 
+
+                //    try
+                //    {
+                //        System.IO.File.Copy(from, to, true);
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        ex.ToString();
+                //    }
+                //}
+
+
+
+
+                aNum = aRegisterPublishSecurityMN.InsertApprovalSection_PublishDocument(PublishDocument, LoginSession.UserName(), DepartmentCheck, Department);
+                if (aNum > 0)
+                {
+                    aInfo = "SUCCESS";
+                }
+                else
+                {
+                    aInfo = "ERROR";
+                }
+
+                #region
+                PublishReffMN aPublishReffMN = new PublishReffMN();
+                DataTable aTemp = aPublishReffMN.ListPublishReff(PublishDocument, string.Empty, string.Empty, string.Empty, string.Empty,
+                Convert.ToDateTime("1900-01-01"), Convert.ToDateTime("1900-01-01"));
+                for (int i = 0; i < aTemp.Rows.Count; i++)
+                {
+                    DeleteFilePublishRefferent(Convert.ToString(aTemp.Rows[i]["Attachment"]).Trim());
+                }
+
+                aNum = aPublishReffMN.DeletedPublishReff(PublishDocument);
+                if (aNum > 0)
+                {
+                    #region
+                    string FormNo = string.Empty;
+                    string FormName = string.Empty;
+                    string PreservingDepartment = string.Empty;
+                    DateTime PreservingTime = Convert.ToDateTime("1900/01/01");
+                    string FilePublishReff = string.Empty;
+                    int index = 0;
+                    int OrderBy = 0;
+                    PublishReff = "<table>" + PublishReff + "</table>";
+                    System.Xml.XmlDocument xd = new System.Xml.XmlDocument();
+                    xd.LoadXml(PublishReff);
+                    System.Xml.XmlNodeList nodeList_tr = xd.GetElementsByTagName("tr");
+                    foreach (System.Xml.XmlNode node_tr in nodeList_tr)
+                    {
+                        OrderBy++;
+                        index = 0;
+                        System.Xml.XmlNodeList nodeList_td = node_tr.SelectNodes("td");
+                        foreach (System.Xml.XmlNode notde_td in nodeList_td)
+                        {
+                            if (index == 0)
+                            {
+                                index++;
+                            }
+                            else if (index == 1)
+                            {
+                                FormNo = notde_td.InnerText;
+                                index++;
+                            }
+                            else if (index == 2)
+                            {
+                                FormName = notde_td.InnerText;
+                                index++;
+                            }
+                            else if (index == 3)
+                            {
+                                PreservingDepartment = notde_td.Attributes["value"].Value;
+                                index++;
+                            }
+                            else if (index == 4)
+                            {
+                                PreservingTime = String.IsNullOrEmpty(notde_td.InnerText.Trim()) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(notde_td.InnerText.Trim());
+                                index++;
+                            }
+                            else if (index == 5)
+                            {
+                                FilePublishReff = notde_td.InnerText;
+                                index++;
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }
+                        aPublishReffMN.InsertPublishReff(PublishDocument, FormNo, FormName, PreservingDepartment, PreservingTime, FilePublishReff, "1", LoginSession.UserName(), OrderBy);
+                    }
+                    #endregion
+                }
+                #endregion
+
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+            if (aInfo.Equals("SUCCESS"))
+            {
+                aInfo = PublishDocument;
+            }
+
+            return JsonConvert.SerializeObject(aInfo); ;
+        }
+
+        [WebMethod]
+        public string DeleteFilePublishSecurity(string FileName)
+        {
+            try
+            {
+                FileName = FileName.Trim();
+                string filePath = string.Empty;
+                filePath = Server.MapPath("~/Updatafile/PublishDoc/" + FileName);
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+                return JsonConvert.SerializeObject(FileName);
+            }
+            catch (Exception ex)
+            {
+                ex.ToString();
+                return JsonConvert.SerializeObject("Error");
+            }
+        }
+
+        [WebMethod]
+        public string DeleteFilePublishSeNeed(string FileName)
+        {
+            try
+            {
+                FileName = FileName.Trim();
+                string filePath = string.Empty;
+                filePath = Server.MapPath("~/Updatafile/PublishDoc/NeedRelease/" + FileName);
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+                return JsonConvert.SerializeObject(FileName);
+            }
+            catch (Exception ex)
+            {
+                ex.ToString();
+                return JsonConvert.SerializeObject("Error");
+            }
+        }
+
+        [WebMethod]
+        public string CheckDisplaySubmitPublishSecurity(string PublishDocument)
+        {
+            return JsonConvert.SerializeObject(aRegisterPublishSecurityMN.CheckDisplaySubmitPublishDocument(PublishDocument, LoginSession.UserName()));
+        }
+
+        [WebMethod]
+        public string CreateCodeFormAutoSe(string Code_Dcc, string NameCol)
+        {
+            return JsonConvert.SerializeObject(aRegisterPublishSecurityMN.CreateCodeFormAuto(Code_Dcc, NameCol, "Categorys"));
+        }
+
+        [WebMethod]
+        public string AcceptRegisterPublishSecurity(string PublishDocument, string States, string Comment, string Url, string DepartmentCheck)
+        {
+            #region
+            UsersMN aUsersMN = new UsersMN();
+            string aInfo = string.Empty;
+            int aNum = 0;
+            if (States.Equals("C01"))
+            {
+                States = "C25";
+                //DataTable aCheck = aUsersMN.CheckLevel(LoginSession.UserName());
+                //if (aCheck.Rows.Count > 0)
+                //{
+                //    string Position = aCheck.Rows[0]["Position"].ToString().Trim();
+                //    if (Position.Equals("TT"))
+                //    {
+                //        States = "C05";
+                //    }
+                //    else if (Position.Equals("TP"))
+                //    {
+                //        States = "C10";
+                //    }
+                //    else
+                //    {
+                //        States = "C03";
+                //    }
+                //}
+                //else
+                //{
+                //    States = "C03";
+                //}
+            }
+            //else if (States.Equals("C03"))
+            //{
+            //    int TS = aRegisterPublishDocumentMN.CheckApprovalSection(PublishDocument, States);
+            //    if (TS > 1)
+            //    {
+            //        States = "C03";
+            //    }
+            //    else
+            //    {
+            //        States = "C05";
+            //    }
+            //}
+            //else if (States.Equals("C05"))
+            //{
+            //    int TS = aRegisterPublishDocumentMN.CheckApprovalSection(PublishDocument, States);
+            //    if (TS > 1)
+            //    {
+            //        States = "C05";
+            //    }
+            //    else
+            //    {
+            //        States = "C10";
+            //    }
+            //}
+            //else if (States.Equals("C10"))
+            //{
+            //    if (String.IsNullOrEmpty(DepartmentCheck))
+            //    {
+            //        States = "C20";
+            //    }
+            //    else
+            //    {
+            //        States = "C15";                   
+            //    }
+
+            //}
+            //else if (States.Equals("C15"))
+            //{
+            //    int TS = aRegisterPublishDocumentMN.CheckApprovalSection(PublishDocument,States);
+            //    if (TS > 1)
+            //    {
+            //        States = "C15";
+            //    }
+            //    else
+            //    {
+            //        States = "C20";
+            //    }
+            //}
+            //else if (States.Equals("C20"))
+            //{
+            //    States = "C25";
+            //}
+            else if (States.Equals("C25"))
+            {
+                States = "C26";
+            }
+            #endregion
+
+            #region
+            aNum = aRegisterPublishSecurityMN.AcceptRegisterPublishDocument(PublishDocument, LoginSession.UserName(), States);
+            if (aNum > 0)
+            {
+                //Status = C-00010  : Da ky
+                aNum = aRegisterCodeSecurityMN.UpdateApprovalSection(PublishDocument, LoginSession.UserName(), Comment, "C-00010");
+                if (aNum > 0)
+                {
+                    aInfo = "SUCCESS";
+                    #region
+                    string ToEmail = string.Empty;
+                    string BCC = string.Empty;
+                    string Status = string.Empty;
+                    string Contents = string.Empty;
+                    string Title = string.Empty;
+
+
+
+                    HistorySendMailMN aHistorySendMailMN = new HistorySendMailMN();
+
+                    DataTable aTemp = aRegisterPublishSecurityMN.CheckListSendMail_Publish(PublishDocument);
+                    for (int i = 0; i < aTemp.Rows.Count; i++)
+                    {
+                        string UserName = Convert.ToString(aTemp.Rows[i]["UserName"]);
+                        DataTable aData = aUsersMN.ListUsers(UserName, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "0");
+                        for (int j = 0; j < aData.Rows.Count; j++)
+                        {
+                            string HoTen = Convert.ToString(aData.Rows[j]["HoTen"]);
+                            if (States.Equals("C26"))
+                            {
+                                Utils.ContentSendMail_Accept(PublishDocument, Url, HoTen, UserName, ref Title, ref Contents);
+                            }
+                            else
+                            {
+                                Utils.ContentSendMail_WaitSign(PublishDocument, Url, HoTen, UserName, ref Title, ref Contents);
+                            }
+                            ToEmail = Convert.ToString(aData.Rows[j]["Email"]);
+                            bool bS = Utils.SendMail(ToEmail, BCC, BCC, Title, Contents);
+                            Status = bS ? "SUCCESS" : "ERRER";
+                            ToEmail = ToEmail + "___" + UserName;
+
+                            aHistorySendMailMN.InsertHistorySendMail(PublishDocument, ToEmail, BCC, Status, Contents, Title, LoginSession.UserName());
+                        }
+                    }
+                    #endregion
+                }
+                else
+                {
+                    aInfo = "ERROR";
+                }
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+            return JsonConvert.SerializeObject(aInfo);
+            #endregion
+        }
+
+        [WebMethod]
+        public string RejectRegisterPublishSecurity(string PublishDocument, string Comment, string Url)
+        {
+            string aInfo = string.Empty;
+            int aNum = 0;
+            //States = C30 : Lam lai don
+            aNum = aRegisterPublishSecurityMN.RejectRegisterPublishDocument(PublishDocument, LoginSession.UserName(), "C30");
+            if (aNum > 0)
+            {
+                //Status = C-00011  : Tu choi
+                aNum = aRegisterCodeSecurityMN.UpdateApprovalSection(PublishDocument, LoginSession.UserName(), Comment, "C-00011");
+                if (aNum > 0)
+                {
+                    aInfo = "SUCCESS";
+                    #region
+
+                    string ToEmail = string.Empty;
+                    string BCC = string.Empty;
+                    string Status = string.Empty;
+                    string Contents = string.Empty;
+                    string Title = string.Empty;
+
+
+                    HistorySendMailMN aHistorySendMailMN = new HistorySendMailMN();
+                    UsersMN aUsersMN = new UsersMN();
+                    DataTable aTemp = aRegisterPublishSecurityMN.CheckListSendMail_Publish(PublishDocument);
+                    for (int i = 0; i < aTemp.Rows.Count; i++)
+                    {
+                        string UserName = Convert.ToString(aTemp.Rows[i]["UserName"]);
+                        DataTable aData = aUsersMN.ListUsers(UserName, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "0");
+                        for (int j = 0; j < aData.Rows.Count; j++)
+                        {
+                            string HoTen = Convert.ToString(aData.Rows[j]["HoTen"]);
+                            Utils.ContentSendMail_Reject(PublishDocument, Url, HoTen, UserName, ref Title, ref Contents);
+                            ToEmail = Convert.ToString(aData.Rows[j]["Email"]);
+                            bool bS = Utils.SendMail(ToEmail, BCC, BCC, Title, Contents);
+                            Status = bS ? "SUCCESS" : "ERRER";
+                            ToEmail = ToEmail + "___" + UserName;
+
+                            aHistorySendMailMN.InsertHistorySendMail(PublishDocument, ToEmail, BCC, Status, Contents, Title, LoginSession.UserName());
+                        }
+                    }
+                    #endregion
+                }
+                else
+                {
+                    aInfo = "ERROR";
+                }
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+            return JsonConvert.SerializeObject(aInfo);
+        }
+
+        [WebMethod]
+        public string DeletedRegisterPublishSecurity(string ID)
+        {
+            string aInfo = string.Empty;
+            int aNum = aRegisterPublishSecurityMN.DeletedRegisterPublishDocument(ID, LoginSession.UserName());
+            if (aNum > 0)
+            {
+                aInfo = "SUCCESS";
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+            return JsonConvert.SerializeObject(aInfo);
+        }
+
+        [WebMethod]
+        public string SaveFilePublishDocSe()
+        {
+            try
+            {
+                string fileName = string.Empty;
+                string filePath = string.Empty;
+                fileName = HttpContext.Current.Request.Files["FileName"].FileName;
+                fileName = fileName.Replace("+", "");
+                string[] sl = fileName.Split('\\');
+                if (sl.Length > 1)
+                {
+                    fileName = sl[sl.Length - 1];
+                }
+                fileName = DateTime.Now.ToString("yyyyMMddHHmmss") + "_" + Guid.NewGuid().ToString().Substring(0, 8) + "_"
+                + Guid.NewGuid().ToString().Substring(0, 8) + "_" + fileName;
+                filePath = Server.MapPath("~/Updatafile/PublishDoc/" + fileName);
+                HttpContext.Current.Request.Files["FileName"].SaveAs(filePath);
+                return fileName;
+            }
+            catch (Exception ex)
+            {
+                ex.ToString();
+                return string.Empty;
+            }
+        }
+
+        [WebMethod]
+        public string SaveFilePublishNeedReleaseSe()
+        {
+            try
+            {
+                string Version = HttpContext.Current.Request.Params["Version"].ToString();
+                string fileName = string.Empty;
+                string filePath = string.Empty;
+                fileName = HttpContext.Current.Request.Files["FileNameNeedRelease"].FileName;
+                fileName = fileName.Replace("+", "");
+                string[] sl = fileName.Split('\\');
+                if (sl.Length > 1)
+                {
+                    fileName = sl[sl.Length - 1];
+                }
+                fileName = Version + "_" + DateTime.Now.ToString("yyyyMMddHHmmss") + "_" + Guid.NewGuid().ToString().Substring(0, 8) + "_"
+                + Guid.NewGuid().ToString().Substring(0, 8) + "_" + fileName;
+                filePath = Server.MapPath("~/Updatafile/PublishDoc/NeedRelease/" + fileName);
+                HttpContext.Current.Request.Files["FileNameNeedRelease"].SaveAs(filePath);
+                return fileName;
+            }
+            catch (Exception ex)
+            {
+                ex.ToString();
+                return string.Empty;
+            }
+        }
+
+        [WebMethod]
+        public string SearchRegisterPublishSecurity(string DocumentNo, string ListDocumentNo)
+        {
+            return JsonConvert.SerializeObject(aRegisterPublishSecurityMN.SearchRegisterPublishDocument(DocumentNo, ListDocumentNo));
+        }
+
+        [WebMethod]
+        public string CheckExistsFilePublishReffSe(string FileName)
+        {
+            try
+            {
+                FileName = FileName.Trim();
+                string filePath = string.Empty;
+                filePath = Server.MapPath("~/Updatafile/PublishDoc/Refferent/" + FileName);
+                if (System.IO.File.Exists(filePath))
+                {
+                    return JsonConvert.SerializeObject("EXISTED");
+                }
+                return JsonConvert.SerializeObject("NOT_EXISTED");
+            }
+            catch (Exception ex)
+            {
+                ex.ToString();
+                return JsonConvert.SerializeObject("ERROR");
+            }
+        }
+
+        [WebMethod]
+        public string CheckExistsFilePublishSecurity(string FileName)
+        {
+            try
+            {
+                FileName = FileName.Trim();
+                string filePath = string.Empty;
+                filePath = Server.MapPath("~/Updatafile/PublishDoc/" + FileName);
+                if (System.IO.File.Exists(filePath))
+                {
+                    return JsonConvert.SerializeObject("EXISTED");
+                }
+                return JsonConvert.SerializeObject("NOT_EXISTED");
+            }
+            catch (Exception ex)
+            {
+                ex.ToString();
+                return JsonConvert.SerializeObject("ERROR");
+            }
+        }
+
+        [WebMethod]
+        public string CheckExistsFilePublishSecurityNeed(string FileName)
+        {
+            try
+            {
+                FileName = FileName.Trim();
+                string filePath = string.Empty;
+                filePath = Server.MapPath("~/Updatafile/PublishDoc/NeedRelease/" + FileName);
+                if (System.IO.File.Exists(filePath))
+                {
+                    return JsonConvert.SerializeObject("EXISTED");
+                }
+                return JsonConvert.SerializeObject("NOT_EXISTED");
+            }
+            catch (Exception ex)
+            {
+                ex.ToString();
+                return JsonConvert.SerializeObject("ERROR");
+            }
+        }
+
+        [WebMethod]
+        public string UpdateRegisterPublishDocumentByPublishSecurity(string PublishDocument, string UserEdit, string StatusEdit, string Url)
+        {
+            #region
+            string aInfo = string.Empty;
+            int aNum = 0;
+            aNum = aRegisterPublishSecurityMN.UpdateRegisterPublishDocumentByPublishDocument(PublishDocument, UserEdit, StatusEdit);
+            if (aNum > 0)
+            {
+                aInfo = "SUCCESS";
+                if (StatusEdit.Equals("2"))
+                {
+                    string ToEmail = string.Empty;
+                    string BCC = string.Empty;
+                    string Status = string.Empty;
+                    string Contents = string.Empty;
+                    string Title = string.Empty;
+                    string UserName = string.Empty;
+                    string FullName = string.Empty;
+                    HistorySendMailMN aHistorySendMailMN = new HistorySendMailMN();
+                    UsersMN aUsersMN = new UsersMN();
+                    DataTable aData = aUsersMN.ListUsers(UserEdit, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "0");
+                    if (aData.Rows.Count > 0)
+                    {
+                        Url = Url + "/RegisterEditDocument.aspx?PublishDocument=" + PublishDocument;
+                        ToEmail = Convert.ToString(aData.Rows[0]["Email"]);
+                        UserName = UserEdit;
+                        FullName = Convert.ToString(aData.Rows[0]["HoTen"]);
+                        Utils.ContentSendMail_Edit(PublishDocument, Url, FullName, UserName, ref Title, ref Contents);
+                        bool bS = Utils.SendMail(ToEmail, BCC, BCC, Title, Contents);
+                        Status = bS ? "SUCCESS" : "ERRER";
+                        ToEmail = ToEmail + "___" + UserName;
+                        aHistorySendMailMN.InsertHistorySendMail(PublishDocument, ToEmail, BCC, Status, Contents, Title, LoginSession.UserName());
+                    }
+                }
+
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+            return JsonConvert.SerializeObject(aInfo);
+            #endregion
+        }
+
+        #endregion
+
+        #region RegisterCancelSecurity
+        RegisterCancelSecurityMN aRegisterCancelSecurityMN = new RegisterCancelSecurityMN();
+
+        [WebMethod]
+        public string ListRegisterCancelSecurity(string CancelDocument, string DocNo_DCC, string DocName, string CreatedBy,
+            string States, string CheckWait, string Type, string Department, string fApplicationDate, string tApplicationDate)
+        {
+            DateTime FromApplicationDate = String.IsNullOrEmpty(fApplicationDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(fApplicationDate);
+            DateTime ToApplicationDate = String.IsNullOrEmpty(tApplicationDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(tApplicationDate);
+
+            return JsonConvert.SerializeObject(aRegisterCancelSecurityMN.ListRegisterCancelDocument(CancelDocument, DocNo_DCC, DocName, CreatedBy, States,
+                CheckWait, Type, Department, FromApplicationDate, ToApplicationDate));
+        }
+
+        [WebMethod]
+        public string InsertOrUpdateRegisterCancelSecurity(string ID, string CancelDocument, string sApplicationDate, string sEffectiveDate, string ApplicationSite,
+            string CloseDocument, string ApplicationNo_Code, string DocNo_DCC, string ReasonOfApplication, string Department)
+        {
+            DateTime EffectiveDate = String.IsNullOrEmpty(sEffectiveDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(sEffectiveDate);
+            DateTime ApplicationDate = String.IsNullOrEmpty(sApplicationDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(sApplicationDate);
+            if (String.IsNullOrEmpty(ID))
+            {
+
+                CategorysMN aCategorysMN = new CategorysMN();
+                DataTable aData = aCategorysMN.ListCategorys(ApplicationSite, string.Empty, "CT-00003");
+                string MaXuong = string.Empty;
+                if (aData.Rows.Count > 0)
+                {
+                    MaXuong = Convert.ToString(aData.Rows[0]["Code"]);
+                }
+                CancelDocument = "SOP-G-" + MaXuong + DateTime.Now.Year.ToString() + Utils.GetCodeAuto("CancelDocument", "RegisterCancelDocument");
+            }
+
+            string aInfo = "ERROR";
+            int aNum = aRegisterCancelSecurityMN.InsertOrUpdateRegisterCancelDocument(ID, CancelDocument, ApplicationDate, EffectiveDate, ApplicationSite, CloseDocument, ApplicationNo_Code,
+                DocNo_DCC, ReasonOfApplication, "G01", LoginSession.UserName(), Department);
+            if (aNum > 0)
+            {
+                aNum = aRegisterCancelSecurityMN.InsertApprovalSection_CancelDocument(CancelDocument, LoginSession.UserName(), Department);
+                if (aNum > 0)
+                {
+                    aInfo = "SUCCESS";
+                }
+                else
+                {
+                    aInfo = "ERROR";
+                }
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+
+            if (aInfo.Equals("SUCCESS"))
+            {
+                aInfo = CancelDocument;
+            }
+
+            return JsonConvert.SerializeObject(aInfo); ;
+        }
+
+        [WebMethod]
+        public string DeletedRegisterCancelSecurity(string ID)
+        {
+            string aInfo = string.Empty;
+            int aNum = aRegisterCancelSecurityMN.DeletedRegisterCancelDocument(ID, LoginSession.UserName());
+            if (aNum > 0)
+            {
+                aInfo = "SUCCESS";
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+            return JsonConvert.SerializeObject(aInfo);
+        }
+
+        [WebMethod]
+        public string AcceptRegisterCancelSecurity(string CancelDocument, string States, string Comment, string Url)
+        {
+            #region
+            UsersMN aUsersMN = new UsersMN();
+            string aInfo = string.Empty;
+            int aNum = 0;
+            if (States.Equals("G01"))
+            {
+                DataTable aCheck = aUsersMN.CheckLevel(LoginSession.UserName());
+                if (aCheck.Rows.Count > 0)
+                {
+                    string Position = aCheck.Rows[0]["Position"].ToString().Trim();
+                    if (Position.Equals("TT"))
+                    {
+                        States = "G05";
+                    }
+                    else if (Position.Equals("TP"))
+                    {
+                        States = "G10";
+                    }
+                    else
+                    {
+                        States = "G03";
+                    }
+                }
+                else
+                {
+                    States = "G03";
+                }
+            }
+            else if (States.Equals("G03"))
+            {
+                int TS = aRegisterCancelSecurityMN.CheckApprovalSection_Cancel(CancelDocument, States);
+                if (TS > 1)
+                {
+                    States = "G03";
+                }
+                else
+                {
+                    States = "G05";
+                }
+            }
+            else if (States.Equals("G05"))
+            {
+                int TS = aRegisterCancelSecurityMN.CheckApprovalSection_Cancel(CancelDocument, States);
+                if (TS > 1)
+                {
+                    States = "G05";
+                }
+                else
+                {
+                    States = "G10";
+                }
+            }
+            else if (States.Equals("G10"))
+            {
+                States = "G15";
+            }
+            #endregion
+
+            aNum = aRegisterCancelDocumentMN.AcceptRegisterCancelDocument(CancelDocument, LoginSession.UserName(), States);
+            if (aNum > 0)
+            {
+                #region
+                //Status = C-00010  : Da ky
+                aNum = aRegisterCodeSecurityMN.UpdateApprovalSection(CancelDocument, LoginSession.UserName(), Comment, "C-00010");
+                if (aNum > 0)
+                {
+                    aInfo = "SUCCESS";
+                    #region Gui email
+
+                    string ToEmail = string.Empty;
+                    string BCC = string.Empty;
+                    string Status = string.Empty;
+                    string Contents = string.Empty;
+                    string Title = string.Empty;
+
+
+
+                    HistorySendMailMN aHistorySendMailMN = new HistorySendMailMN();
+
+                    DataTable aTemp = aRegisterCancelSecurityMN.CheckListSendMail_Cancel(CancelDocument);
+                    for (int i = 0; i < aTemp.Rows.Count; i++)
+                    {
+                        string UserName = Convert.ToString(aTemp.Rows[i]["UserName"]);
+                        DataTable aData = aUsersMN.ListUsers(UserName, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "0");
+                        for (int j = 0; j < aData.Rows.Count; j++)
+                        {
+                            string HoTen = Convert.ToString(aData.Rows[j]["HoTen"]);
+                            if (States.Equals("G15"))
+                            {
+                                Utils.ContentSendMail_Accept(CancelDocument, Url, HoTen, UserName, ref Title, ref Contents);
+                            }
+                            else
+                            {
+                                Utils.ContentSendMail_WaitSign(CancelDocument, Url, HoTen, UserName, ref Title, ref Contents);
+                            }
+                            ToEmail = Convert.ToString(aData.Rows[j]["Email"]);
+                            bool bS = Utils.SendMail(ToEmail, BCC, BCC, Title, Contents);
+                            Status = bS ? "SUCCESS" : "ERRER";
+                            ToEmail = ToEmail + "___" + UserName;
+
+                            aHistorySendMailMN.InsertHistorySendMail(CancelDocument, ToEmail, BCC, Status, Contents, Title, LoginSession.UserName());
+
+                        }
+                    }
+                    #endregion
+                }
+                else
+                {
+                    aInfo = "ERROR";
+                }
+                #endregion
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+            return JsonConvert.SerializeObject(aInfo);
+        }
+
+        [WebMethod]
+        public string RejectRegisterCancelSecurity(string CancelDocument, string Comment, string Url)
+        {
+            string aInfo = string.Empty;
+            int aNum = 0;
+            //States = 20 : Lam lai don
+            aNum = aRegisterCancelSecurityMN.RejectRegisterCancelDocument(CancelDocument, LoginSession.UserName(), "G20");
+            if (aNum > 0)
+            {
+                //Status = C-00011  : Tu choi
+                aNum = aRegisterCodeSecurityMN.UpdateApprovalSection(CancelDocument, LoginSession.UserName(), Comment, "C-00011");
+                if (aNum > 0)
+                {
+                    aInfo = "SUCCESS";
+                    #region
+
+                    string ToEmail = string.Empty;
+                    string BCC = string.Empty;
+                    string Status = string.Empty;
+                    string Contents = string.Empty;
+                    string Title = string.Empty;
+
+
+                    HistorySendMailMN aHistorySendMailMN = new HistorySendMailMN();
+                    UsersMN aUsersMN = new UsersMN();
+                    DataTable aTemp = aRegisterCodeSecurityMN.CheckListSendMail_Code(CancelDocument);
+                    for (int i = 0; i < aTemp.Rows.Count; i++)
+                    {
+                        string UserName = Convert.ToString(aTemp.Rows[i]["UserName"]);
+                        DataTable aData = aUsersMN.ListUsers(UserName, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "0");
+                        for (int j = 0; j < aData.Rows.Count; j++)
+                        {
+                            string HoTen = Convert.ToString(aData.Rows[j]["HoTen"]);
+                            Utils.ContentSendMail_Reject(CancelDocument, Url, HoTen, UserName, ref Title, ref Contents);
+                            ToEmail = Convert.ToString(aData.Rows[j]["Email"]);
+                            bool bS = Utils.SendMail(ToEmail, BCC, BCC, Title, Contents);
+                            Status = bS ? "SUCCESS" : "ERRER";
+                            ToEmail = ToEmail + "___" + UserName;
+
+                            aHistorySendMailMN.InsertHistorySendMail(CancelDocument, ToEmail, BCC, Status, Contents, Title, LoginSession.UserName());
+                        }
+                    }
+                    #endregion
+                }
+                else
+                {
+                    aInfo = "ERROR";
+                }
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+            return JsonConvert.SerializeObject(aInfo);
+        }
+
+        [WebMethod]
+        public string CheckDisplaySubmitCancelSecurity(string CancelDocument)
+        {
+            return JsonConvert.SerializeObject(aRegisterCancelSecurityMN.sp_CheckDisplaySubmitCancelDocument(CancelDocument));
+        }
+
+        #endregion
+
+        #region Application Obsoleted Security
+        ApplicationObsoletedSecurityMN aApplicationObsoletedSecurityMN = new ApplicationObsoletedSecurityMN();
+
+        [WebMethod]
+        public string ListApplicationObsoletedSecurity(string ObsoletedDocument, string CreatedBy, string States, string CheckWait,
+            string DocNo, string DocName, string Department, string fApplicationDate, string tApplicationDate)
+        {
+            DateTime FromApplicationDate = String.IsNullOrEmpty(fApplicationDate) ? Convert.ToDateTime("1901/01/01") : Convert.ToDateTime(fApplicationDate);
+            DateTime ToApplicationDate = String.IsNullOrEmpty(tApplicationDate) ? Convert.ToDateTime("1901/01/01") : Convert.ToDateTime(tApplicationDate);
+            return JsonConvert.SerializeObject(aApplicationObsoletedSecurityMN.ListApplicationObsoletedDocument(ObsoletedDocument, CreatedBy, States, CheckWait,
+               DocNo, DocName, Department, FromApplicationDate, ToApplicationDate));
+        }
+
+        [WebMethod]
+        public string InsertOrUpdateApplicationObsoletedSecurity(string ID, string ObsoletedDocument, string PublishDocument, string ApplicationSite,
+            string sEffectiveDate, string ReasonObsoleted, string sApplicationDate)
+        {
+            DateTime EffectiveDate = String.IsNullOrEmpty(sEffectiveDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(sEffectiveDate);
+            DateTime ApplicationDate = String.IsNullOrEmpty(sApplicationDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(sApplicationDate);
+
+            if (String.IsNullOrEmpty(ID))
+            {
+
+                CategorysMN aCategorysMN = new CategorysMN();
+                DataTable aData = aCategorysMN.ListCategorys(ApplicationSite, string.Empty, "CT-00003");
+                string MaXuong = string.Empty;
+                if (aData.Rows.Count > 0)
+                {
+                    MaXuong = Convert.ToString(aData.Rows[0]["Code"]);
+                }
+                ObsoletedDocument = "SOP-D-" + MaXuong + DateTime.Now.Year.ToString() + Utils.GetCodeAuto("ObsoletedDocument", "ApplicationObsoletedDocument");
+            }
+
+            string aInfo = "ERROR";
+            int aNum = aApplicationObsoletedSecurityMN.InsertOrUpdateApplicationObsoletedDocument(ID, ObsoletedDocument, PublishDocument,
+                EffectiveDate, ReasonObsoleted, "D01", ApplicationDate, LoginSession.UserName());
+            if (aNum > 0)
+            {
+                aNum = aApplicationObsoletedSecurityMN.InsertApprovalSection_ObsoletedDocument(ObsoletedDocument, LoginSession.UserName());
+                if (aNum > 0)
+                {
+                    aInfo = "SUCCESS";
+                }
+                else
+                {
+                    aInfo = "ERROR";
+                }
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+            if (aInfo.Equals("SUCCESS"))
+            {
+                aInfo = ObsoletedDocument;
+            }
+
+            return JsonConvert.SerializeObject(aInfo); ;
+        }
+
+        [WebMethod]
+        public string CheckDisplaySubmitObsoletedSecurity(string ObsoletedDocument)
+        {
+            return JsonConvert.SerializeObject(aApplicationObsoletedSecurityMN.CheckDisplaySubmitObsoletedDocument(ObsoletedDocument, LoginSession.UserName()));
+        }
+
+        [WebMethod]
+        public string AcceptAcceptApplicationObsoletedSecurity(string ObsoletedDocument, string States, string Comment, string Url)
+        {
+            #region
+            UsersMN aUsersMN = new UsersMN();
+            string aInfo = string.Empty;
+            int aNum = 0;
+            if (States.Equals("D01"))
+            {
+                DataTable aCheck = aUsersMN.CheckLevel(LoginSession.UserName());
+                if (aCheck.Rows.Count > 0)
+                {
+                    string Position = aCheck.Rows[0]["Position"].ToString().Trim();
+                    if (Position.Equals("TT"))
+                    {
+                        States = "D05";
+                    }
+                    else if (Position.Equals("TP"))
+                    {
+                        States = "D10";
+                    }
+                    else
+                    {
+                        States = "D03";
+                    }
+                }
+                else
+                {
+                    States = "D03";
+                }
+            }
+            else if (States.Equals("D03"))
+            {
+                int TS = aApplicationObsoletedSecurityMN.CheckApprovalSection_ObsoletedDocument(ObsoletedDocument, States);
+                if (TS > 1)
+                {
+                    States = "D03";
+                }
+                else
+                {
+                    States = "D05";
+                }
+            }
+            else if (States.Equals("D05"))
+            {
+                int TS = aApplicationObsoletedSecurityMN.CheckApprovalSection_ObsoletedDocument(ObsoletedDocument, States);
+                if (TS > 1)
+                {
+                    States = "D05";
+                }
+                else
+                {
+                    //States = "D10";
+                    States = "D25";
+                }
+            }
+            //else if (States.Equals("D10"))
+            //{
+            //    States = "D15";
+            //}
+            //else if (States.Equals("D15"))
+            //{
+            //    int TS = aApplicationObsoletedDocumentMN.CheckApprovalSection_ObsoletedDocument(ObsoletedDocument,States);
+            //    if (TS > 1)
+            //    {
+            //        States = "D15";
+            //    }
+            //    else
+            //    {
+            //        States = "D20";
+            //    }
+
+            //}
+            //else if (States.Equals("D20"))
+            //{
+            //    States = "D25";
+            //}
+            else if (States.Equals("D25"))
+            {
+                States = "D26";
+            }
+            #endregion
+
+            #region
+            aNum = aApplicationObsoletedSecurityMN.AcceptAcceptApplicationObsoletedDocument(ObsoletedDocument, LoginSession.UserName(), States);
+            if (aNum > 0)
+            {
+                //Status = C-00010  : Da ky
+                aNum = aRegisterCodeSecurityMN.UpdateApprovalSection(ObsoletedDocument, LoginSession.UserName(), Comment, "C-00010");
+                if (aNum > 0)
+                {
+                    aInfo = "SUCCESS";
+                    #region
+
+                    string ToEmail = string.Empty;
+                    string BCC = string.Empty;
+                    string Status = string.Empty;
+                    string Contents = string.Empty;
+                    string Title = string.Empty;
+
+
+
+                    HistorySendMailMN aHistorySendMailMN = new HistorySendMailMN();
+
+                    DataTable aTemp = aApplicationObsoletedSecurityMN.CheckListSendMail_Obsoleted(ObsoletedDocument);
+                    for (int i = 0; i < aTemp.Rows.Count; i++)
+                    {
+                        string UserName = Convert.ToString(aTemp.Rows[i]["UserName"]);
+                        DataTable aData = aUsersMN.ListUsers(UserName, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "0");
+                        for (int j = 0; j < aData.Rows.Count; j++)
+                        {
+                            string HoTen = Convert.ToString(aData.Rows[j]["HoTen"]);
+                            if (States.Equals("D26"))
+                            {
+                                Utils.ContentSendMail_Accept(ObsoletedDocument, Url, HoTen, UserName, ref Title, ref Contents);
+                            }
+                            else
+                            {
+                                Utils.ContentSendMail_WaitSign(ObsoletedDocument, Url, HoTen, UserName, ref Title, ref Contents);
+                            }
+                            ToEmail = Convert.ToString(aData.Rows[j]["Email"]);
+                            bool bS = Utils.SendMail(ToEmail, BCC, BCC, Title, Contents);
+                            Status = bS ? "SUCCESS" : "ERRER";
+                            ToEmail = ToEmail + "___" + UserName;
+
+                            aHistorySendMailMN.InsertHistorySendMail(ObsoletedDocument, ToEmail, BCC, Status, Contents, Title, LoginSession.UserName());
+
+                        }
+                    }
+                    #endregion
+                }
+                else
+                {
+                    aInfo = "ERROR";
+                }
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+            return JsonConvert.SerializeObject(aInfo);
+            #endregion
+        }
+
+        [WebMethod]
+        public string RejectApplicationObsoletedSecurity(string ObsoletedDocument, string Comment, string Url)
+        {
+            string aInfo = string.Empty;
+            int aNum = 0;
+            //States = D30 : Lam lai don
+            aNum = aApplicationObsoletedSecurityMN.RejectApplicationObsoletedDocument(ObsoletedDocument, LoginSession.UserName(), "D30");
+            if (aNum > 0)
+            {
+                //Status = C-00011  : Tu choi
+                aNum = aRegisterCodeSecurityMN.UpdateApprovalSection(ObsoletedDocument, LoginSession.UserName(), Comment, "C-00011");
+                if (aNum > 0)
+                {
+                    aInfo = "SUCCESS";
+                    #region
+
+                    string ToEmail = string.Empty;
+                    string BCC = string.Empty;
+                    string Status = string.Empty;
+                    string Contents = string.Empty;
+                    string Title = string.Empty;
+
+
+                    HistorySendMailMN aHistorySendMailMN = new HistorySendMailMN();
+                    UsersMN aUsersMN = new UsersMN();
+                    DataTable aTemp = aApplicationObsoletedSecurityMN.CheckListSendMail_Obsoleted(ObsoletedDocument);
+                    for (int i = 0; i < aTemp.Rows.Count; i++)
+                    {
+                        string UserName = Convert.ToString(aTemp.Rows[i]["UserName"]);
+                        DataTable aData = aUsersMN.ListUsers(UserName, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "0");
+                        for (int j = 0; j < aData.Rows.Count; j++)
+                        {
+                            string HoTen = Convert.ToString(aData.Rows[j]["HoTen"]);
+                            Utils.ContentSendMail_Reject(ObsoletedDocument, Url, HoTen, UserName, ref Title, ref Contents);
+                            ToEmail = Convert.ToString(aData.Rows[j]["Email"]);
+                            bool bS = Utils.SendMail(ToEmail, BCC, BCC, Title, Contents);
+                            Status = bS ? "SUCCESS" : "ERRER";
+                            ToEmail = ToEmail + "___" + UserName;
+
+                            aHistorySendMailMN.InsertHistorySendMail(ObsoletedDocument, ToEmail, BCC, Status, Contents, Title, LoginSession.UserName());
+
+                        }
+                    }
+                    #endregion
+                }
+                else
+                {
+                    aInfo = "ERROR";
+                }
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+            return JsonConvert.SerializeObject(aInfo);
+        }
+
+        [WebMethod]
+        public string DeletedApplicationObsoletedSecurity(string ID)
+        {
+            string aInfo = string.Empty;
+            int aNum = aApplicationObsoletedSecurityMN.DeletedApplicationObsoletedDocument(ID, LoginSession.UserName());
+            if (aNum > 0)
+            {
+                aInfo = "SUCCESS";
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+            return JsonConvert.SerializeObject(aInfo);
+        }
+
+        #endregion
+
+        #region RegisterEditSecurity
+        RegisterEditSecurityMN aRegisterEditSecurityMN = new RegisterEditSecurityMN();
+
+        [WebMethod]
+        public string ListRegisterEditSecurity(string EditDocument, string CreatedBy, string States, string CheckWait,
+            string DocumentNo, string DocumentName, string IndexWord, string Department, string fApplicationDate, string tApplicationDate)
+        {
+            DateTime FromApplicationDate = String.IsNullOrEmpty(fApplicationDate) ? Convert.ToDateTime("1901/01/01") : Convert.ToDateTime(fApplicationDate);
+            DateTime ToApplicationDate = String.IsNullOrEmpty(tApplicationDate) ? Convert.ToDateTime("1901/01/01") : Convert.ToDateTime(tApplicationDate);
+            return JsonConvert.SerializeObject(aRegisterEditSecurityMN.ListRegisterEditDocument(EditDocument, CreatedBy, States, CheckWait,
+                DocumentNo, DocumentName, IndexWord, Department, FromApplicationDate, ToApplicationDate));
+        }
+
+
+        [WebMethod]
+        public string InsertOrUpdateRegisterEditSecurity(string ID, string EditDocument, string PublishDocument, string ApplicationSite, string sEffectiveDate, string DocumentNo,
+            string Rev, string DocumentName, string DocumentType, string RevisionApplication, string CheckingNotice,
+            string DeletedDocumentOld, string ReferenceDocument, string IndexWord, string ContentFile, string ContentFile_old, string PublishReff,
+            string ApplicableSite, string ApplicableBU, string NeedReleaseFile, string NeedReleaseFile_old, string sApplicationDate,
+            string DepartmentCheck, string CodeDocument, string Department, string Status)
+        {
+            DateTime EffectiveDate = String.IsNullOrEmpty(sEffectiveDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(sEffectiveDate);
+            DateTime ApplicationDate = String.IsNullOrEmpty(sApplicationDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(sApplicationDate);
+            Status = String.IsNullOrEmpty(Status) ? "EDIT" : "CHECK";
+
+            if (String.IsNullOrEmpty(ID))
+            {
+
+                CategorysMN aCategorysMN = new CategorysMN();
+                DataTable aData = aCategorysMN.ListCategorys(ApplicationSite, string.Empty, "CT-00003");
+                string MaXuong = string.Empty;
+                if (aData.Rows.Count > 0)
+                {
+                    MaXuong = Convert.ToString(aData.Rows[0]["Code"]);
+                }
+                EditDocument = "SOP-B-" + MaXuong + DateTime.Now.Year.ToString() + Utils.GetCodeAuto("EditDocument", "RegisterEditDocument");
+            }
+            else
+            {
+                if (!String.IsNullOrEmpty(ContentFile))
+                {
+                    DeleteFileEdit(ContentFile_old);
+                }
+                ContentFile = String.IsNullOrEmpty(ContentFile) ? ContentFile_old : ContentFile;
+
+                if (!String.IsNullOrEmpty(NeedReleaseFile))
+                {
+                    if (!String.IsNullOrEmpty(NeedReleaseFile_old))
+                    {
+                        DeleteFilePublishNeed(NeedReleaseFile_old);
+                    }
+                }
+                NeedReleaseFile = String.IsNullOrEmpty(NeedReleaseFile) ? NeedReleaseFile_old : NeedReleaseFile;
+            }
+
+            string aInfo = "ERROR";
+            int aNum = aRegisterEditSecurityMN.InsertOrUpdateRegisterEditDocument(ID, EditDocument, PublishDocument, LoginSession.UserName(), ApplicationSite, EffectiveDate, DocumentNo,
+             Rev, DocumentName, DocumentType, RevisionApplication, CheckingNotice, DeletedDocumentOld, ReferenceDocument, IndexWord,
+             ContentFile, string.Empty, ApplicableSite, ApplicableBU, NeedReleaseFile, Status, "B01", string.Empty, ApplicationDate, DepartmentCheck, CodeDocument, Department);
+            if (aNum > 0)
+            {
+                aNum = aRegisterEditSecurityMN.InsertApprovalSection_EditDocument(EditDocument, LoginSession.UserName(), DepartmentCheck, Department);
+                if (aNum > 0)
+                {
+                    aInfo = "SUCCESS";
+                }
+                else
+                {
+                    aInfo = "ERROR";
+                }
+
+                #region
+                PublishReffMN aPublishReffMN = new PublishReffMN();
+                DataTable aTemp = aPublishReffMN.ListPublishReff(EditDocument, string.Empty, string.Empty, string.Empty, string.Empty,
+                Convert.ToDateTime("1900-01-01"), Convert.ToDateTime("1900-01-01"));
+                for (int i = 0; i < aTemp.Rows.Count; i++)
+                {
+                    DeleteFilePublishRefferent(Convert.ToString(aTemp.Rows[i]["Attachment"]).Trim());
+                }
+
+                aNum = aPublishReffMN.DeletedPublishReff(EditDocument);
+                if (aNum > 0)
+                {
+                    #region
+                    string FormNo = string.Empty;
+                    string FormName = string.Empty;
+                    string PreservingDepartment = string.Empty;
+                    DateTime PreservingTime = Convert.ToDateTime("1900/01/01");
+                    string FilePublishReff = string.Empty;
+                    int index = 0;
+                    int OrderBy = 0;
+                    PublishReff = "<table>" + PublishReff + "</table>";
+                    System.Xml.XmlDocument xd = new System.Xml.XmlDocument();
+                    xd.LoadXml(PublishReff);
+                    System.Xml.XmlNodeList nodeList_tr = xd.GetElementsByTagName("tr");
+                    foreach (System.Xml.XmlNode node_tr in nodeList_tr)
+                    {
+                        OrderBy++;
+                        index = 0;
+                        System.Xml.XmlNodeList nodeList_td = node_tr.SelectNodes("td");
+                        foreach (System.Xml.XmlNode notde_td in nodeList_td)
+                        {
+                            if (index == 0)
+                            {
+                                index++;
+                            }
+                            else if (index == 1)
+                            {
+                                FormNo = notde_td.InnerText;
+                                index++;
+                            }
+                            else if (index == 2)
+                            {
+                                FormName = notde_td.InnerText;
+                                index++;
+                            }
+                            else if (index == 3)
+                            {
+                                PreservingDepartment = notde_td.Attributes["value"].Value;
+                                index++;
+                            }
+                            else if (index == 4)
+                            {
+                                PreservingTime = String.IsNullOrEmpty(notde_td.InnerText.Trim()) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(notde_td.InnerText.Trim());
+                                index++;
+                            }
+                            else if (index == 5)
+                            {
+                                FilePublishReff = notde_td.InnerText;
+                                index++;
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }
+                        aPublishReffMN.InsertPublishReff(EditDocument, FormNo, FormName, PreservingDepartment, PreservingTime, FilePublishReff, "1", LoginSession.UserName(), OrderBy);
+                    }
+                    #endregion
+                }
+                #endregion
+
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+            if (aInfo.Equals("SUCCESS"))
+            {
+                aInfo = EditDocument;
+            }
+
+            return JsonConvert.SerializeObject(aInfo); ;
+        }
+
+        [WebMethod]
+        public string DeleteFileEditSe(string FileName)
+        {
+            try
+            {
+                FileName = FileName.Trim();
+                string filePath = string.Empty;
+                filePath = Server.MapPath("~/Updatafile/PublishDoc/" + FileName);
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+                return JsonConvert.SerializeObject(FileName);
+            }
+            catch (Exception ex)
+            {
+                ex.ToString();
+                return JsonConvert.SerializeObject("Error");
+            }
+        }
+
+        [WebMethod]
+        public string CheckDisplaySubmitEditSecurity(string EditDocument)
+        {
+            return JsonConvert.SerializeObject(aRegisterEditSecurityMN.CheckDisplaySubmitEditDocument(EditDocument, LoginSession.UserName()));
+        }
+
+        [WebMethod]
+        public string AcceptRegisterEditSecurity(string EditDocument, string States, string Comment, string Url, string DepartmentCheck)
+        {
+            #region
+            UsersMN aUsersMN = new UsersMN();
+            string aInfo = string.Empty;
+            int aNum = 0;
+            if (States.Equals("B01"))
+            {
+                States = "B25";
+                //DataTable aCheck = aUsersMN.CheckLevel(LoginSession.UserName());
+                //if (aCheck.Rows.Count > 0)
+                //{
+                //    string Position = aCheck.Rows[0]["Position"].ToString().Trim();
+                //    if (Position.Equals("TT"))
+                //    {
+                //        States = "B05";
+                //    }
+                //    else if (Position.Equals("TP"))
+                //    {
+                //        States = "B10";
+                //    }
+                //    else
+                //    {
+                //        States = "B03";
+                //    }
+                //}
+                //else
+                //{
+                //    States = "B03";
+                //}
+            }
+            //else if (States.Equals("B03"))
+            //{
+            //    int TS = aRegisterEditDocumentMN.CheckApprovalSection_EditDocument(EditDocument, States);
+            //    if (TS > 1)
+            //    {
+            //        States = "B03";
+            //    }
+            //    else
+            //    {
+            //        States = "B05";
+            //    }
+            //}
+            //else if (States.Equals("B05"))
+            //{
+            //    int TS = aRegisterEditDocumentMN.CheckApprovalSection_EditDocument(EditDocument, States);
+            //    if (TS > 1)
+            //    {
+            //        States = "B05";
+            //    }
+            //    else
+            //    {
+            //        States = "B10";
+            //    }
+            //}
+            //else if (States.Equals("B10"))
+            //{
+            //    if (String.IsNullOrEmpty(DepartmentCheck))
+            //    {
+            //        States = "B20";
+            //    }
+            //    else
+            //    {
+            //        States = "B15";
+            //    }
+
+            //}
+            //else if (States.Equals("B15"))
+            //{
+            //    int TS = aRegisterEditDocumentMN.CheckApprovalSection_EditDocument(EditDocument,States);
+            //    if (TS > 1)
+            //    {
+            //        States = "B15";
+            //    }
+            //    else
+            //    {
+            //        States = "B20";
+            //    }
+
+            //}
+            //else if (States.Equals("B20"))
+            //{
+            //    States = "B25";
+            //}
+            else if (States.Equals("B25"))
+            {
+                States = "B26";
+            }
+            #endregion
+
+            #region
+            aNum = aRegisterEditSecurityMN.AcceptRegisterEditDocument(EditDocument, LoginSession.UserName(), States);
+            if (aNum > 0)
+            {
+                //Status = C-00010  : Da ky
+                aNum = aRegisterCodeSecurityMN.UpdateApprovalSection(EditDocument, LoginSession.UserName(), Comment, "C-00010");
+                if (aNum > 0)
+                {
+                    aInfo = "SUCCESS";
+                    #region
+
+                    string ToEmail = string.Empty;
+                    string BCC = string.Empty;
+                    string Status = string.Empty;
+                    string Contents = string.Empty;
+                    string Title = string.Empty;
+
+                    HistorySendMailMN aHistorySendMailMN = new HistorySendMailMN();
+
+                    DataTable aTemp = aRegisterEditSecurityMN.CheckListSendMail_Edit(EditDocument);
+                    for (int i = 0; i < aTemp.Rows.Count; i++)
+                    {
+                        string UserName = Convert.ToString(aTemp.Rows[i]["UserName"]);
+                        DataTable aData = aUsersMN.ListUsers(UserName, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "0");
+                        for (int j = 0; j < aData.Rows.Count; j++)
+                        {
+                            string HoTen = Convert.ToString(aData.Rows[j]["HoTen"]);
+                            if (States.Equals("B26"))
+                            {
+                                Utils.ContentSendMail_Accept(EditDocument, Url, HoTen, UserName, ref Title, ref Contents);
+                            }
+                            else
+                            {
+                                Utils.ContentSendMail_WaitSign(EditDocument, Url, HoTen, UserName, ref Title, ref Contents);
+                            }
+                            ToEmail = Convert.ToString(aData.Rows[j]["Email"]);
+                            bool bS = Utils.SendMail(ToEmail, BCC, BCC, Title, Contents);
+                            Status = bS ? "SUCCESS" : "ERRER";
+                            ToEmail = ToEmail + "___" + UserName;
+
+
+                            aHistorySendMailMN.InsertHistorySendMail(EditDocument, ToEmail, BCC, Status, Contents, Title, LoginSession.UserName());
+
+                        }
+                    }
+                    #endregion
+                }
+                else
+                {
+                    aInfo = "ERROR";
+                }
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+            return JsonConvert.SerializeObject(aInfo);
+            #endregion
+        }
+
+        [WebMethod]
+        public string RejectRegisterEditSecurity(string EditDocument, string Comment, string Url)
+        {
+            string aInfo = string.Empty;
+            int aNum = 0;
+            //States = B30 : Lam lai don
+            aNum = aRegisterEditSecurityMN.RejectRegisterEditDocument(EditDocument, LoginSession.UserName(), "B30");
+            if (aNum > 0)
+            {
+                //Status = C-00011  : Tu choi
+                aNum = aRegisterCodeSecurityMN.UpdateApprovalSection(EditDocument, LoginSession.UserName(), Comment, "C-00011");
+                if (aNum > 0)
+                {
+                    aInfo = "SUCCESS";
+                    #region
+
+                    string ToEmail = string.Empty;
+                    string BCC = string.Empty;
+                    string Status = string.Empty;
+                    string Contents = string.Empty;
+                    string Title = string.Empty;
+
+
+                    HistorySendMailMN aHistorySendMailMN = new HistorySendMailMN();
+                    UsersMN aUsersMN = new UsersMN();
+                    DataTable aTemp = aRegisterEditSecurityMN.CheckListSendMail_Edit(EditDocument);
+                    for (int i = 0; i < aTemp.Rows.Count; i++)
+                    {
+                        string UserName = Convert.ToString(aTemp.Rows[i]["UserName"]);
+                        DataTable aData = aUsersMN.ListUsers(UserName, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "0");
+                        for (int j = 0; j < aData.Rows.Count; j++)
+                        {
+                            string HoTen = Convert.ToString(aData.Rows[j]["HoTen"]);
+                            Utils.ContentSendMail_Reject(EditDocument, Url, HoTen, UserName, ref Title, ref Contents);
+                            ToEmail = Convert.ToString(aData.Rows[j]["Email"]);
+                            bool bS = Utils.SendMail(ToEmail, BCC, BCC, Title, Contents);
+                            Status = bS ? "SUCCESS" : "ERRER";
+                            ToEmail = ToEmail + "___" + UserName;
+
+                            aHistorySendMailMN.InsertHistorySendMail(EditDocument, ToEmail, BCC, Status, Contents, Title, LoginSession.UserName());
+
+                        }
+                    }
+                    #endregion
+                }
+                else
+                {
+                    aInfo = "ERROR";
+                }
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+            return JsonConvert.SerializeObject(aInfo);
+        }
+
+        [WebMethod]
+        public string DeletedRegisterEditSecurity(string ID)
+        {
+            string aInfo = string.Empty;
+            int aNum = aRegisterEditSecurityMN.DeletedRegisterEditDocument(ID, LoginSession.UserName());
+            if (aNum > 0)
+            {
+                aInfo = "SUCCESS";
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+            return JsonConvert.SerializeObject(aInfo);
+        }
+        #endregion
+
+        #region RenewalsSecurity
+        RenewalsSecurityMN aRenewalsSecurityMN = new RenewalsSecurityMN();
+
+        [WebMethod]
+        public string ListRegisterRenewalSecurity(string Code, string DCC, string Type)
+        {
+            return JsonConvert.SerializeObject(aRenewalsSecurityMN.ListRegisterRenewalDocument(Code, DCC, Type));
+        }
+
+        [WebMethod]
+        public string ListRenewalsSecurity(string RenewalCode, string CreatedBy, string States, string CheckWait, string DocumentNo,
+            string fApplicationDate, string tApplicationDate)
+        {
+            DateTime FromApplicationDate = String.IsNullOrEmpty(fApplicationDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(fApplicationDate);
+            DateTime ToApplicationDate = String.IsNullOrEmpty(tApplicationDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(tApplicationDate);
+
+            return JsonConvert.SerializeObject(aRenewalsSecurityMN.ListRenewalsDocument(RenewalCode, CreatedBy, States, CheckWait, DocumentNo, FromApplicationDate, ToApplicationDate));
+        }
+
+
+        [WebMethod]
+        public string InsertOrUpdateRenewalsSecurity(string ID, string RenewalCode, string sApplicationDate, string ApplicationSite, string TypeRenewal,
+            string DocumentNo, string DCC_NO, string Reason, string Revisor, string sCloseDate, string Department, string BeforRevised,
+            string BeforRevisor, string BeforCloseDate, string Type)
+        {
+            DateTime ApplicationDate = String.IsNullOrEmpty(sApplicationDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(sApplicationDate);
+            DateTime EffectiveDate = Convert.ToDateTime("1900/01/01");
+            DateTime CloseDate = String.IsNullOrEmpty(sCloseDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(sCloseDate);
+
+            if (String.IsNullOrEmpty(ID))
+            {
+                CategorysMN aCategorysMN = new CategorysMN();
+                DataTable aData = aCategorysMN.ListCategorys(ApplicationSite, string.Empty, "CT-00003");
+                string MaXuong = string.Empty;
+                if (aData.Rows.Count > 0)
+                {
+                    MaXuong = Convert.ToString(aData.Rows[0]["Code"]);
+                }
+                RenewalCode = "SOP-H-" + MaXuong + DateTime.Now.Year.ToString() + Utils.GetCodeAuto("RenewalCode", "RenewalsDocument");
+            }
+
+            string aInfo = "ERROR";
+            int aNum = aRenewalsSecurityMN.InsertOrUpdateRenewalsDocument(ID, RenewalCode, ApplicationDate, ApplicationSite, EffectiveDate, TypeRenewal, DocumentNo,
+            DCC_NO, Reason, Revisor, CloseDate, "H01", Department, LoginSession.UserName(), BeforRevised, BeforRevisor, BeforCloseDate, Type);
+            if (aNum > 0)
+            {
+                aNum = aRenewalsSecurityMN.InsertApprovalSection_Renewal(RenewalCode, LoginSession.UserName(), Department);
+                if (aNum > 0)
+                {
+                    aInfo = "SUCCESS";
+                }
+                else
+                {
+                    aInfo = "ERROR";
+                }
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+
+            if (aInfo.Equals("SUCCESS"))
+            {
+                aInfo = RenewalCode;
+            }
+
+            return JsonConvert.SerializeObject(aInfo); ;
+        }
+
+        [WebMethod]
+        public string DeletedRenewalsSecurity(string ID)
+        {
+            string aInfo = string.Empty;
+            int aNum = aRenewalsSecurityMN.DeletedRenewalsDocument(ID, LoginSession.UserName());
+            if (aNum > 0)
+            {
+                aInfo = "SUCCESS";
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+            return JsonConvert.SerializeObject(aInfo);
+        }
+
+        [WebMethod]
+        public string AcceptRenewalsSecurity(string RenewalCode, string States, string Comment, string Url, string Person)
+        {
+            Person = (Person.Equals("null") || Person.Equals("ALL")) ? string.Empty : Person;
+
+            #region
+            string aInfo = string.Empty;
+            int aNum = 0;
+            if (States.Equals("H01"))
+            {
+                States = "H05";
+            }
+            else if (States.Equals("H05"))
+            {
+                States = "H10";
+            }
+            else if (States.Equals("H10"))
+            {
+                if (String.IsNullOrEmpty(Person))
+                {
+                    States = "H20";
+                }
+                else
+                {
+                    States = "H15";
+                }
+
+            }
+            else if (States.Equals("H15"))
+            {
+                States = "H20";
+            }
+            #endregion
+            aNum = aRenewalsSecurityMN.AcceptRenewalsDocument(RenewalCode, LoginSession.UserName(), States, Person);
+            if (aNum > 0)
+            {
+                #region
+                //Status = C-00010  : Da ky
+                aNum = aRegisterCodeSecurityMN.UpdateApprovalSection(RenewalCode, LoginSession.UserName(), Comment, "C-00010");
+                if (aNum > 0)
+                {
+                    aInfo = "SUCCESS";
+                    #region Gui email
+
+                    string ToEmail = string.Empty;
+                    string BCC = string.Empty;
+                    string Status = string.Empty;
+                    string Contents = string.Empty;
+                    string Title = string.Empty;
+
+
+                    HistorySendMailMN aHistorySendMailMN = new HistorySendMailMN();
+                    UsersMN aUsersMN = new UsersMN();
+                    DataTable aTemp = aRenewalsSecurityMN.CheckListSendMail_Renewal(RenewalCode);
+                    for (int i = 0; i < aTemp.Rows.Count; i++)
+                    {
+                        string UserName = Convert.ToString(aTemp.Rows[i]["UserName"]);
+                        DataTable aData = aUsersMN.ListUsers(UserName, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "0");
+                        for (int j = 0; j < aData.Rows.Count; j++)
+                        {
+                            string HoTen = Convert.ToString(aData.Rows[j]["HoTen"]);
+                            if (States.Equals("H20"))
+                            {
+                                Utils.ContentSendMail_Accept(RenewalCode, Url, HoTen, UserName, ref Title, ref Contents);
+                            }
+                            else
+                            {
+                                Utils.ContentSendMail_WaitSign(RenewalCode, Url, HoTen, UserName, ref Title, ref Contents);
+                            }
+                            ToEmail = Convert.ToString(aData.Rows[j]["Email"]);
+                            bool bS = Utils.SendMail(ToEmail, BCC, BCC, Title, Contents);
+                            Status = bS ? "SUCCESS" : "ERRER";
+                            ToEmail = ToEmail + "___" + UserName;
+                            aHistorySendMailMN.InsertHistorySendMail(RenewalCode, ToEmail, BCC, Status, Contents, Title, LoginSession.UserName());
+                        }
+                    }
+                    #endregion
+                }
+                else
+                {
+                    aInfo = "ERROR";
+                }
+                #endregion
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+            return JsonConvert.SerializeObject(aInfo);
+        }
+
+        [WebMethod]
+        public string RejectRenewalsSecurity(string RenewalCode, string Comment, string Url)
+        {
+            string aInfo = string.Empty;
+            int aNum = 0;
+            //States = F20 : Lam lai don
+            aNum = aRenewalsSecurityMN.RejectRenewalsDocument(RenewalCode, LoginSession.UserName(), "H25");
+            if (aNum > 0)
+            {
+                //Status = C-00011  : Tu choi
+                aNum = aRegisterCodeSecurityMN.UpdateApprovalSection(RenewalCode, LoginSession.UserName(), Comment, "C-00011");
+                if (aNum > 0)
+                {
+                    aInfo = "SUCCESS";
+                    #region
+
+                    string ToEmail = string.Empty;
+                    string BCC = string.Empty;
+                    string Status = string.Empty;
+                    string Contents = string.Empty;
+                    string Title = string.Empty;
+
+
+                    HistorySendMailMN aHistorySendMailMN = new HistorySendMailMN();
+                    UsersMN aUsersMN = new UsersMN();
+                    DataTable aTemp = aRenewalsSecurityMN.CheckListSendMail_Renewal(RenewalCode);
+                    for (int i = 0; i < aTemp.Rows.Count; i++)
+                    {
+                        string UserName = Convert.ToString(aTemp.Rows[i]["UserName"]);
+                        DataTable aData = aUsersMN.ListUsers(UserName, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "0");
+                        for (int j = 0; j < aData.Rows.Count; j++)
+                        {
+                            string HoTen = Convert.ToString(aData.Rows[j]["HoTen"]);
+                            Utils.ContentSendMail_Reject(RenewalCode, Url, HoTen, UserName, ref Title, ref Contents);
+                            ToEmail = Convert.ToString(aData.Rows[j]["Email"]);
+                            bool bS = Utils.SendMail(ToEmail, BCC, BCC, Title, Contents);
+                            Status = bS ? "SUCCESS" : "ERRER";
+                            ToEmail = ToEmail + "___" + UserName;
+
+                            aHistorySendMailMN.InsertHistorySendMail(RenewalCode, ToEmail, BCC, Status, Contents, Title, LoginSession.UserName());
+
+                        }
+                    }
+                    #endregion
+                }
+                else
+                {
+                    aInfo = "ERROR";
+                }
+            }
+            else
+            {
+                aInfo = "ERROR";
+            }
+            return JsonConvert.SerializeObject(aInfo);
+        }
+
+        [WebMethod]
+        public string CheckDisplaySubmitRenewalsSecurity(string RenewalCode)
+        {
+            return JsonConvert.SerializeObject(aRenewalsSecurityMN.CheckDisplaySubmitRenewalsDocument(RenewalCode));
         }
 
         #endregion

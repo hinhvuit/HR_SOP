@@ -7,10 +7,10 @@ using System.Web;
 
 namespace HR_SOP.Models.Manager
 {
-    public class RegisterCodeDocumentMN
+    public class RegisterCodeSecurityMN
     {
         ConnectionSQL aConnectionSQL = new ConnectionSQL();
-        public DataTable ListRegisterCodeDocument(string CodeDocument, string CreatedBy, string States, string CheckWait,string Type,
+        public DataTable ListRegisterCodeDocument(string CodeDocument, string CreatedBy, string States, string CheckWait, string Type,
         string Department, string DocNo, string DocName, DateTime FromApplicationDate, DateTime ToApplicationDate)
         {
             DataTable aData = new DataTable();
@@ -20,7 +20,7 @@ namespace HR_SOP.Models.Manager
                 SqlCommand cmd = new SqlCommand();
                 cmd.Connection = aConnectionSQL.Connection();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = "sp_ListRegisterCodeDocument";
+                cmd.CommandText = "sp_ListRegisterCodeSecurity";
                 cmd.Parameters.Clear();
                 cmd.Parameters.AddWithValue("@CodeDocument", CodeDocument);
                 cmd.Parameters.AddWithValue("@CreatedBy", CreatedBy);
@@ -48,7 +48,7 @@ namespace HR_SOP.Models.Manager
 
         public int InsertOrUpdateRegisterCodeDocument(string ID, string CodeDocument, string User, string ApplicationSite, DateTime EffectiveDate,
             string DocumentType, string ReasonApplication, string ApplicableSite, string ApplicableBU, DateTime ApplicationDate, string States,
-            string Status, string Department,string IsSe)
+            string Status, string Department, string IsSe)
         {
             try
             {
@@ -59,7 +59,7 @@ namespace HR_SOP.Models.Manager
                 if (String.IsNullOrEmpty(ID))
                 {
                     #region
-                    cmd.CommandText = " insert into RegisterCodeDocument(ID,CodeDocument,CreatedDate,CreatedBy,ApplicationSite,EffectiveDate,DocumentType,"
+                    cmd.CommandText = " insert into RegisterCodeSecurity(ID,CodeDocument,CreatedDate,CreatedBy,ApplicationSite,EffectiveDate,DocumentType,"
                         + "ReasonApplication,ApplicableSite,ApplicableBU,IsDeleted,Status,States,Department,ApplicationDate,Type,IsSe) "
                         + "values(NEWID(), @CodeDocument, GETDATE(), @CreatedBy, @ApplicationSite, @EffectiveDate, @DocumentType, @ReasonApplication,"
                         + "@ApplicableSite, @ApplicableBU, 0, @Status, @States, @Department, @ApplicationDate,'1',@IsSe)";
@@ -85,7 +85,7 @@ namespace HR_SOP.Models.Manager
                 else
                 {
                     #region
-                    cmd.CommandText = " update RegisterCodeDocument set ApplicationSite=@ApplicationSite,EffectiveDate=@EffectiveDate,DocumentType=@DocumentType,"
+                    cmd.CommandText = " update RegisterCodeSecurity set ApplicationSite=@ApplicationSite,EffectiveDate=@EffectiveDate,DocumentType=@DocumentType,"
                         + "ReasonApplication=@ReasonApplication,ApplicableSite=@ApplicableSite,ApplicableBU=@ApplicableBU,UpdatedDate=GETDATE(),"
                         + "UpdatedBy=@UpdatedBy,Status=@Status,States=@States,Department=@Department,ApplicationDate=@ApplicationDate where ID = @ID";
                     cmd.Parameters.Clear();
@@ -123,7 +123,7 @@ namespace HR_SOP.Models.Manager
                 SqlCommand cmd = new SqlCommand();
                 cmd.Connection = aConnectionSQL.Connection();
                 cmd.CommandType = CommandType.Text;
-                cmd.CommandText = "update RegisterCodeDocument set IsDeleted = 1,DeletedBy='" + User + "',DeletedDate=GETDATE() where ID = '" + ID + "'";
+                cmd.CommandText = "update RegisterCodeSecurity set IsDeleted = 1,DeletedBy='" + User + "',DeletedDate=GETDATE() where ID = '" + ID + "'";
                 cmd.ExecuteNonQuery();
                 aConnectionSQL.Close();
                 return 1;
@@ -163,7 +163,7 @@ namespace HR_SOP.Models.Manager
 
 
 
-        public int AcceptRegisterCodeDocument(string CodeDocument, string User,string States)
+        public int AcceptRegisterCodeDocument(string CodeDocument, string User, string States)
         {
             try
             {
@@ -171,7 +171,7 @@ namespace HR_SOP.Models.Manager
                 SqlCommand cmd = new SqlCommand();
                 cmd.Connection = aConnectionSQL.Connection();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = "sp_AcceptRegisterCodeDocument";
+                cmd.CommandText = "sp_AcceptRegisterCodeSecurity";
                 cmd.Parameters.Clear();
                 cmd.Parameters.AddWithValue("@CodeDocument", CodeDocument);
                 cmd.Parameters.AddWithValue("@States", States);
@@ -194,7 +194,7 @@ namespace HR_SOP.Models.Manager
                 SqlCommand cmd = new SqlCommand();
                 cmd.Connection = aConnectionSQL.Connection();
                 cmd.CommandType = CommandType.Text;
-                cmd.CommandText = "update RegisterCodeDocument set States ='" + States + "',UpdatedBy='" + User + "',UpdatedDate=GETDATE() where CodeDocument = '" + CodeDocument + "'";
+                cmd.CommandText = "update RegisterCodeSecurity set States ='" + States + "',UpdatedBy='" + User + "',UpdatedDate=GETDATE() where CodeDocument = '" + CodeDocument + "'";
                 cmd.ExecuteNonQuery();
                 aConnectionSQL.Close();
                 return 1;
@@ -214,7 +214,7 @@ namespace HR_SOP.Models.Manager
                 SqlCommand cmd = new SqlCommand();
                 cmd.Connection = aConnectionSQL.Connection();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = "sp_ListDocumentRef";
+                cmd.CommandText = "sp_ListSecurityRef";
                 cmd.Parameters.Clear();
                 cmd.Parameters.AddWithValue("@CodeDocument", CodeDocument);
                 SqlDataAdapter ds_adapter = new SqlDataAdapter();
@@ -230,7 +230,7 @@ namespace HR_SOP.Models.Manager
         }
 
         public int InsertDocumentRef(string DocumentName, string FileName, string AssignedRevisor, DateTime EstimatedCloseDate,
-            string User, string CodeDocument,int OrderBy)
+            string User, string CodeDocument, int OrderBy)
         {
             try
             {
@@ -238,7 +238,7 @@ namespace HR_SOP.Models.Manager
                 SqlCommand cmd = new SqlCommand();
                 cmd.Connection = aConnectionSQL.Connection();
                 cmd.CommandType = CommandType.Text;
-                cmd.CommandText = "insert into DocumentRef(ID,DocumentName,FileName,AssignedRevisor,EstimatedCloseDate,CreatedDate,Createdby,CodeDocument,OrderBy) "
+                cmd.CommandText = "insert into SecurityRef(ID,DocumentName,FileName,AssignedRevisor,EstimatedCloseDate,CreatedDate,Createdby,CodeDocument,OrderBy) "
                 + "values(NEWID(), @DocumentName, @FileName, @AssignedRevisor, @EstimatedCloseDate, GETDATE(), @Createdby, @CodeDocument, @OrderBy)";
                 cmd.Parameters.Clear();
 
@@ -268,7 +268,7 @@ namespace HR_SOP.Models.Manager
                 SqlCommand cmd = new SqlCommand();
                 cmd.Connection = aConnectionSQL.Connection();
                 cmd.CommandType = CommandType.Text;
-                cmd.CommandText = "delete DocumentRef where CodeDocument =@CodeDocument";
+                cmd.CommandText = "delete SecurityRef where CodeDocument =@CodeDocument";
                 cmd.Parameters.Clear();
                 cmd.Parameters.AddWithValue("@CodeDocument", CodeDocument);
                 cmd.ExecuteNonQuery();
@@ -287,12 +287,12 @@ namespace HR_SOP.Models.Manager
             DataTable aData = new DataTable();
             try
             {
-                
+
                 aConnectionSQL.Open();
                 SqlCommand cmd = new SqlCommand();
                 cmd.Connection = aConnectionSQL.Connection();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = "sp_ListApprovalSection";
+                cmd.CommandText = "sp_ListApprovalSectionSecurity";
                 cmd.Parameters.Clear();
                 cmd.Parameters.AddWithValue("@CodeDocument", CodeDocument);
                 SqlDataAdapter ds_adapter = new SqlDataAdapter();
@@ -306,8 +306,8 @@ namespace HR_SOP.Models.Manager
                 throw ex;
             }
         }
-        
-        public int InsertApprovalSection(string CodeDocument, string UserName,string Department)
+
+        public int InsertApprovalSection(string CodeDocument, string UserName, string Department)
         {
             try
             {
@@ -329,8 +329,8 @@ namespace HR_SOP.Models.Manager
                 throw ex;
             }
         }
-        
-        public int UpdateApprovalSection(string CodeDocument, string UserName, string Comment,string Status)
+
+        public int UpdateApprovalSection(string CodeDocument, string UserName, string Comment, string Status)
         {
             try
             {
@@ -363,7 +363,7 @@ namespace HR_SOP.Models.Manager
                 SqlCommand cmd = new SqlCommand();
                 cmd.Connection = aConnectionSQL.Connection();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = "sp_CheckDisplaySubmitCodeDocument";
+                cmd.CommandText = "sp_CheckDisplaySubmitCodeSecurity";
                 cmd.Parameters.Clear();
                 cmd.Parameters.AddWithValue("@CodeDocument", CodeDocument);
                 cmd.Parameters.AddWithValue("@LoginName", LoginSession.UserName());
@@ -388,7 +388,7 @@ namespace HR_SOP.Models.Manager
                 SqlCommand cmd = new SqlCommand();
                 cmd.Connection = aConnectionSQL.Connection();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = "sp_CheckListSendMail_Code";
+                cmd.CommandText = "sp_CheckListSendMail_Security";
                 cmd.Parameters.Clear();
                 cmd.Parameters.AddWithValue("@CodeDocument", CodeDocument);
                 SqlDataAdapter ds_adapter = new SqlDataAdapter();
@@ -452,7 +452,7 @@ namespace HR_SOP.Models.Manager
             }
         }
 
-        public int InsertDCC_Ref(string DocNo, string DocName,string CreatedBy,string CodeDocument,int OrderBy,string ID_DocumentRef)
+        public int InsertDCC_Ref(string DocNo, string DocName, string CreatedBy, string CodeDocument, int OrderBy, string ID_DocumentRef)
         {
             try
             {
@@ -479,7 +479,7 @@ namespace HR_SOP.Models.Manager
             }
         }
 
-        public DataTable ListRegisterCodeDocumentByDCC(string CodeDocument, string CreatedBy,string DocNo, string StatusDCC,
+        public DataTable ListRegisterCodeDocumentByDCC(string CodeDocument, string CreatedBy, string DocNo, string StatusDCC,
             DateTime FromApplicationDate, DateTime ToApplicationDate)
         {
             DataTable aData = new DataTable();
@@ -489,7 +489,7 @@ namespace HR_SOP.Models.Manager
                 SqlCommand cmd = new SqlCommand();
                 cmd.Connection = aConnectionSQL.Connection();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = "sp_ListRegisterCodeDocumentByDCC";
+                cmd.CommandText = "sp_ListRegisterCodeSecurityByDCC";
                 cmd.Parameters.Clear();
                 cmd.Parameters.AddWithValue("@CodeDocument", CodeDocument);
                 cmd.Parameters.AddWithValue("@CreatedBy", CreatedBy);
@@ -539,8 +539,8 @@ namespace HR_SOP.Models.Manager
             }
         }
 
-        public DataTable ListCheckWait(string Code, string Dcc, string Department, string CheckWait,string CreatedBy,
-            DateTime FromDate, DateTime ToDate,string Type)
+        public DataTable ListCheckWait(string Code, string Dcc, string Department, string CheckWait, string CreatedBy,
+            DateTime FromDate, DateTime ToDate, string Type)
         {
             DataTable aData = new DataTable();
             try
@@ -556,7 +556,7 @@ namespace HR_SOP.Models.Manager
                 cmd.Parameters.AddWithValue("@Department", Department);
                 cmd.Parameters.AddWithValue("@CheckWait", CheckWait);
                 cmd.Parameters.AddWithValue("@CreatedBy", CreatedBy);
-                cmd.Parameters.AddWithValue("@FromDate", FromDate); 
+                cmd.Parameters.AddWithValue("@FromDate", FromDate);
                 cmd.Parameters.AddWithValue("@ToDate", ToDate);
                 cmd.Parameters.AddWithValue("@Type", Type);
                 SqlDataAdapter ds_adapter = new SqlDataAdapter();
