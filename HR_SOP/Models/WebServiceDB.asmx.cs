@@ -5625,5 +5625,79 @@ namespace HR_SOP.Models
 
         #endregion
 
+        #region PublishReffSe
+        PublishReffSe aPublishReffSe = new PublishReffSe();
+        [WebMethod]
+        public string ListPublishReffSe(string PublishDocument, string FormNo, string FormName, string PreservingDepartment, string sFromDate, string sToDate)
+        {
+            DateTime FromDate = String.IsNullOrEmpty(sFromDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(sFromDate);
+            DateTime ToDate = String.IsNullOrEmpty(sToDate) ? Convert.ToDateTime("1900/01/01") : Convert.ToDateTime(sToDate);
+
+            return JsonConvert.SerializeObject(aPublishReffSe.ListPublishReff(PublishDocument, FormNo, FormName, PreservingDepartment, "C26", FromDate, ToDate));
+        }
+
+        [WebMethod]
+        public string ListPublishReffByPublishSecurity(string PublishDocument)
+        {
+            return JsonConvert.SerializeObject(aPublishReffSe.ListPublishReff(PublishDocument, string.Empty, string.Empty, string.Empty, string.Empty,
+                Convert.ToDateTime("1900/01/01"), Convert.ToDateTime("1900/01/01")));
+        }
+
+        [WebMethod]
+        public string ListPublishReffByEditSecurity(string EditDocument)
+        {
+            return JsonConvert.SerializeObject(aPublishReffSe.ListPublishReffByEditDocument(EditDocument));
+        }
+
+        [WebMethod]
+        public string SaveFilePublishRefferentSe()
+        {
+            try
+            {
+                string fileName = string.Empty;
+                string filePath = string.Empty;
+                fileName = HttpContext.Current.Request.Files["filePublishAttach"].FileName;
+                fileName = fileName.Replace("+", "");
+                string[] sl = fileName.Split('\\');
+                if (sl.Length > 1)
+                {
+                    fileName = sl[sl.Length - 1];
+                }
+                fileName = DateTime.Now.ToString("yyyyMMddHHmmss") + "_" + Guid.NewGuid().ToString().Substring(0, 8) + "_"
+                + Guid.NewGuid().ToString().Substring(0, 8) + "_" + fileName;
+
+                filePath = Server.MapPath("~/Updatafile/PublishDoc/Refferent/" + fileName);
+                HttpContext.Current.Request.Files["filePublishAttach"].SaveAs(filePath);
+                return fileName;
+            }
+            catch (Exception ex)
+            {
+                ex.ToString();
+                return string.Empty;
+            }
+        }
+
+        [WebMethod]
+        public string DeleteFilePublishRefferentSe(string FileName)
+        {
+            try
+            {
+                FileName = FileName.Trim();
+                string filePath = string.Empty;
+                filePath = Server.MapPath("~/Updatafile/PublishDoc/Refferent/" + FileName);
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+                return JsonConvert.SerializeObject(FileName);
+            }
+            catch (Exception ex)
+            {
+                ex.ToString();
+                return JsonConvert.SerializeObject("Error");
+            }
+        }
+
+        #endregion
     }
 }

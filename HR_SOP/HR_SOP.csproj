@@ -161,6 +161,7 @@
     <Content Include="Account\Login.aspx" />
     <Content Include="Account\Logout.aspx" />
     <Content Include="ApplicationObsoletedDocument.aspx" />
+    <Content Include="ApplicationObsoletedSecurity.aspx" />
     <Content Include="assets\css\bootstrap.css" />
     <Content Include="assets\css\bootstrap.min.css" />
     <Content Include="assets\css\colors.css" />
@@ -2539,16 +2540,27 @@
     <Content Include="Lib\IE11-Windows6.1-x86-en-us.exe" />
     <Content Include="Lib\LotusNotes.dll" />
     <Content Include="ListApplicationObsoletedDocument.aspx" />
+    <Content Include="ListApplicationObsoletedSecurity.aspx" />
     <Content Include="ListCancelDocument.aspx" />
+    <Content Include="ListCancelSecurity.aspx" />
     <Content Include="ListCheckWait.aspx" />
+    <Content Include="ListCheckWaitSe.aspx" />
     <Content Include="ListCodeDocument.aspx" />
+    <Content Include="ListCodeSecurity.aspx" />
     <Content Include="ListEditDocument.aspx" />
+    <Content Include="ListEditSecurity.aspx" />
     <Content Include="ListObsoletedDocument.aspx" />
+    <Content Include="ListObsoletedSecurity.aspx" />
     <Content Include="ListPublishDocument.aspx" />
+    <Content Include="ListPublishSecurity.aspx" />
     <Content Include="ListRegisterCancelDocument.aspx" />
+    <Content Include="ListRegisterCancelSecurity.aspx" />
     <Content Include="ListRegisterEditDocument.aspx" />
+    <Content Include="ListRegisterEditSecurity.aspx" />
     <Content Include="ListRegisterPublishDocument.aspx" />
+    <Content Include="ListRegisterPublishSecurity.aspx" />
     <Content Include="ListReleasedForm.aspx" />
+    <Content Include="ListReleasedFormSe.aspx" />
     <Content Include="Menus.aspx" />
     <Content Include="Models\WebServiceDB.asmx" />
     <Content Include="NoPermitsion.aspx" />
@@ -2559,6 +2571,7 @@
     <Content Include="RegisterEditDocument.aspx" />
     <Content Include="RegisterEditSecurity.aspx" />
     <Content Include="RegisterPublishDocument.aspx" />
+    <Content Include="RegisterPublishSecurity.aspx" />
     <Content Include="Roles.aspx" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -2644,6 +2657,13 @@
     <Compile Include="ApplicationObsoletedDocument.aspx.designer.cs">
       <DependentUpon>ApplicationObsoletedDocument.aspx</DependentUpon>
     </Compile>
+    <Compile Include="ApplicationObsoletedSecurity.aspx.cs">
+      <DependentUpon>ApplicationObsoletedSecurity.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ApplicationObsoletedSecurity.aspx.designer.cs">
+      <DependentUpon>ApplicationObsoletedSecurity.aspx</DependentUpon>
+    </Compile>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -2682,12 +2702,26 @@
     <Compile Include="ListApplicationObsoletedDocument.aspx.designer.cs">
       <DependentUpon>ListApplicationObsoletedDocument.aspx</DependentUpon>
     </Compile>
+    <Compile Include="ListApplicationObsoletedSecurity.aspx.cs">
+      <DependentUpon>ListApplicationObsoletedSecurity.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ListApplicationObsoletedSecurity.aspx.designer.cs">
+      <DependentUpon>ListApplicationObsoletedSecurity.aspx</DependentUpon>
+    </Compile>
     <Compile Include="ListCancelDocument.aspx.cs">
       <DependentUpon>ListCancelDocument.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="ListCancelDocument.aspx.designer.cs">
       <DependentUpon>ListCancelDocument.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ListCancelSecurity.aspx.cs">
+      <DependentUpon>ListCancelSecurity.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ListCancelSecurity.aspx.designer.cs">
+      <DependentUpon>ListCancelSecurity.aspx</DependentUpon>
     </Compile>
     <Compile Include="ListCheckWait.aspx.cs">
       <DependentUpon>ListCheckWait.aspx</DependentUpon>
@@ -2696,12 +2730,26 @@
     <Compile Include="ListCheckWait.aspx.designer.cs">
       <DependentUpon>ListCheckWait.aspx</DependentUpon>
     </Compile>
+    <Compile Include="ListCheckWaitSe.aspx.cs">
+      <DependentUpon>ListCheckWaitSe.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ListCheckWaitSe.aspx.designer.cs">
+      <DependentUpon>ListCheckWaitSe.aspx</DependentUpon>
+    </Compile>
     <Compile Include="ListCodeDocument.aspx.cs">
       <DependentUpon>ListCodeDocument.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="ListCodeDocument.aspx.designer.cs">
       <DependentUpon>ListCodeDocument.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ListCodeSecurity.aspx.cs">
+      <DependentUpon>ListCodeSecurity.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ListCodeSecurity.aspx.designer.cs">
+      <DependentUpon>ListCodeSecurity.aspx</DependentUpon>
     </Compile>
     <Compile Include="ListEditDocument.aspx.cs">
       <DependentUpon>ListEditDocument.aspx</DependentUpon>
@@ -2710,12 +2758,26 @@
     <Compile Include="ListEditDocument.aspx.designer.cs">
       <DependentUpon>ListEditDocument.aspx</DependentUpon>
     </Compile>
+    <Compile Include="ListEditSecurity.aspx.cs">
+      <DependentUpon>ListEditSecurity.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ListEditSecurity.aspx.designer.cs">
+      <DependentUpon>ListEditSecurity.aspx</DependentUpon>
+    </Compile>
     <Compile Include="ListObsoletedDocument.aspx.cs">
       <DependentUpon>ListObsoletedDocument.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="ListObsoletedDocument.aspx.designer.cs">
       <DependentUpon>ListObsoletedDocument.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ListObsoletedSecurity.aspx.cs">
+      <DependentUpon>ListObsoletedSecurity.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ListObsoletedSecurity.aspx.designer.cs">
+      <DependentUpon>ListObsoletedSecurity.aspx</DependentUpon>
     </Compile>
     <Compile Include="ListPublishDocument.aspx.cs">
       <DependentUpon>ListPublishDocument.aspx</DependentUpon>
@@ -2724,12 +2786,26 @@
     <Compile Include="ListPublishDocument.aspx.designer.cs">
       <DependentUpon>ListPublishDocument.aspx</DependentUpon>
     </Compile>
+    <Compile Include="ListPublishSecurity.aspx.cs">
+      <DependentUpon>ListPublishSecurity.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ListPublishSecurity.aspx.designer.cs">
+      <DependentUpon>ListPublishSecurity.aspx</DependentUpon>
+    </Compile>
     <Compile Include="ListRegisterCancelDocument.aspx.cs">
       <DependentUpon>ListRegisterCancelDocument.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="ListRegisterCancelDocument.aspx.designer.cs">
       <DependentUpon>ListRegisterCancelDocument.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ListRegisterCancelSecurity.aspx.cs">
+      <DependentUpon>ListRegisterCancelSecurity.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ListRegisterCancelSecurity.aspx.designer.cs">
+      <DependentUpon>ListRegisterCancelSecurity.aspx</DependentUpon>
     </Compile>
     <Compile Include="ListRegisterEditDocument.aspx.cs">
       <DependentUpon>ListRegisterEditDocument.aspx</DependentUpon>
@@ -2738,6 +2814,13 @@
     <Compile Include="ListRegisterEditDocument.aspx.designer.cs">
       <DependentUpon>ListRegisterEditDocument.aspx</DependentUpon>
     </Compile>
+    <Compile Include="ListRegisterEditSecurity.aspx.cs">
+      <DependentUpon>ListRegisterEditSecurity.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ListRegisterEditSecurity.aspx.designer.cs">
+      <DependentUpon>ListRegisterEditSecurity.aspx</DependentUpon>
+    </Compile>
     <Compile Include="ListRegisterPublishDocument.aspx.cs">
       <DependentUpon>ListRegisterPublishDocument.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -2745,12 +2828,26 @@
     <Compile Include="ListRegisterPublishDocument.aspx.designer.cs">
       <DependentUpon>ListRegisterPublishDocument.aspx</DependentUpon>
     </Compile>
+    <Compile Include="ListRegisterPublishSecurity.aspx.cs">
+      <DependentUpon>ListRegisterPublishSecurity.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ListRegisterPublishSecurity.aspx.designer.cs">
+      <DependentUpon>ListRegisterPublishSecurity.aspx</DependentUpon>
+    </Compile>
     <Compile Include="ListReleasedForm.aspx.cs">
       <DependentUpon>ListReleasedForm.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="ListReleasedForm.aspx.designer.cs">
       <DependentUpon>ListReleasedForm.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ListReleasedFormSe.aspx.cs">
+      <DependentUpon>ListReleasedFormSe.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ListReleasedFormSe.aspx.designer.cs">
+      <DependentUpon>ListReleasedFormSe.aspx</DependentUpon>
     </Compile>
     <Compile Include="Menus.aspx.cs">
       <DependentUpon>Menus.aspx</DependentUpon>
@@ -2855,6 +2952,13 @@
     </Compile>
     <Compile Include="RegisterPublishDocument.aspx.designer.cs">
       <DependentUpon>RegisterPublishDocument.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RegisterPublishSecurity.aspx.cs">
+      <DependentUpon>RegisterPublishSecurity.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RegisterPublishSecurity.aspx.designer.cs">
+      <DependentUpon>RegisterPublishSecurity.aspx</DependentUpon>
     </Compile>
     <Compile Include="Roles.aspx.cs">
       <DependentUpon>Roles.aspx</DependentUpon>

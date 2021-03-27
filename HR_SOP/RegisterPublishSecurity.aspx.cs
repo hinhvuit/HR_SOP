@@ -1,0 +1,162 @@
+﻿using HR_SOP.Models;
+using HR_SOP.Models.Manager;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace HR_SOP
+{
+    public partial class RegisterPublishSecurity : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+                if (LoginSession.IsLogin())
+                {
+                    if (!LoginSession.IsAdmin())
+                    {
+                        if (!LoginSession.IsView("MN-00002"))
+                        {
+                            Response.Redirect("NoPermitsion.aspx");
+                        }
+                    }
+                }
+                else
+                {
+                    Response.Redirect("/Account/Login.aspx?Url=" + Request.Url.PathAndQuery);
+                }
+                hidUserName.Value = LoginSession.UserName();
+
+                #region
+                CategorysMN aCategorysMN = new CategorysMN();
+                ListItem aListItem = new ListItem();
+                string CatTypeCode = string.Empty;
+                CatTypeCode = "CT-00003"; //Application Site
+                ddlApplicationSite.Items.Clear();
+                ddlApplicationSite.DataSource = aCategorysMN.ListCategorys(string.Empty, string.Empty, CatTypeCode);
+                ddlApplicationSite.DataValueField = "CatCode";
+                ddlApplicationSite.DataTextField = "CatName";
+                ddlApplicationSite.DataBind();
+
+                //CatTypeCode = "CT-00004"; //Doc Type
+                //ddlDocType.Items.Clear();
+                //ddlDocType.DataSource = aCategorysMN.ListCategorys(string.Empty, string.Empty, CatTypeCode);
+                //ddlDocType.DataValueField = "CatCode";
+                //ddlDocType.DataTextField = "CatName";
+                //ddlDocType.DataBind();
+
+                CatTypeCode = "CT-00002";
+                ddlPreservingDepartment.Items.Clear();
+                ddlPreservingDepartment.DataSource = aCategorysMN.ListCategorys(string.Empty, string.Empty, CatTypeCode);
+                ddlPreservingDepartment.DataValueField = "CatCode";
+                ddlPreservingDepartment.DataTextField = "CatName";
+                ddlPreservingDepartment.DataBind();
+                ddlPreservingDepartment.Items.Insert(0, new ListItem("---ALL---", "ALL"));
+
+                CatTypeCode = "CT-00009";
+                ddlStorageTime.Items.Clear();
+                ddlStorageTime.DataSource = aCategorysMN.ListCategorys(string.Empty, string.Empty, CatTypeCode);
+                ddlStorageTime.DataValueField = "CatCode";
+                ddlStorageTime.DataTextField = "CatName";
+                ddlStorageTime.DataBind();
+
+                UserInDepartmentMN aUserInDepartmentMN = new UserInDepartmentMN();
+                #endregion
+
+                #region
+                string DocNo = Convert.ToString(Request.QueryString["DocNo"]);
+                string CodeDocument = Convert.ToString(Request.QueryString["CodeDocument"]);
+                string PublishDocument = Convert.ToString(Request.QueryString["PublishDocument"]);
+
+                if (!String.IsNullOrEmpty(CodeDocument) && !String.IsNullOrEmpty(DocNo))
+                {
+                    #region
+                    ddlDepartment.Items.Clear();
+                    ddlDepartment.DataSource = aUserInDepartmentMN.ListDepartmentByUserName(LoginSession.UserName());
+                    ddlDepartment.DataValueField = "Department";
+                    ddlDepartment.DataTextField = "NameDepartment";
+                    ddlDepartment.DataBind();
+
+                    hidCodeDocument.Value = CodeDocument;
+                    RegisterCodeSecurityMN aRegisterCodeDocumentMN = new RegisterCodeSecurityMN();
+                    txtApplicationName.Text = LoginSession.FullName();
+                    txtApplicationNO.Text = string.Empty;
+                    txtApplicationDate.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+                    DataTable aData = aRegisterCodeDocumentMN.ListRegisterCodeDocumentByDCC(CodeDocument, string.Empty, DocNo,
+                    string.Empty, Convert.ToDateTime("1900-01-01"), Convert.ToDateTime("1900-01-01"));
+                    if (aData.Rows.Count > 0)
+                    {
+                        txtDocNO.Text = Convert.ToString(aData.Rows[0]["DocNo"]);
+                        txtDocName.Text = Convert.ToString(aData.Rows[0]["DocName"]);
+                        ddlApplicationSite.Text = Convert.ToString(aData.Rows[0]["ApplicationSite"]);
+                        //hidFileName.Value = Convert.ToString(aData.Rows[0]["FileName"]);
+                        //ddlDocType.Text = Convert.ToString(aData.Rows[0]["DocumentType"]);
+                        hidApplicableSite.Value = Convert.ToString(aData.Rows[0]["ApplicableSite"]);
+                        //hidApplicableBU.Value = Convert.ToString(aData.Rows[0]["ApplicableBU"]);
+                    }
+
+                    #endregion
+                }
+                else
+                {
+                    if (!String.IsNullOrEmpty(PublishDocument))
+                    {
+                        #region
+
+                        RegisterPublishSecurityMN aRegisterPublishDocumentMN = new RegisterPublishSecurityMN();
+                        DataTable aData = aRegisterPublishDocumentMN.ListRegisterPublishDocument(PublishDocument, string.Empty, string.Empty,
+                            string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, Convert.ToDateTime("1900-01-01"), Convert.ToDateTime("1900-01-01"));
+                        if (aData.Rows.Count > 0)
+                        {
+                            ddlDepartment.Items.Clear();
+                            ddlDepartment.DataSource = aUserInDepartmentMN.ListDepartmentByUserName(Convert.ToString(aData.Rows[0]["CreatedBy"]));
+                            ddlDepartment.DataValueField = "Department";
+                            ddlDepartment.DataTextField = "NameDepartment";
+                            ddlDepartment.DataBind();
+
+                            txtApplicationName.Text = Convert.ToString(aData.Rows[0]["HoTen"]);
+                            hidID.Value = Convert.ToString(aData.Rows[0]["ID"]);
+                            hidPublishDocument.Value = PublishDocument;
+                            hidStates.Value = Convert.ToString(aData.Rows[0]["States"]);
+                            txtApplicationNO.Text = Convert.ToString(aData.Rows[0]["PublishDocument"]);
+                            ddlApplicationSite.Text = Convert.ToString(aData.Rows[0]["ApplicationSite"]);
+                            txtEffectiveDate.Text = Convert.ToDateTime(aData.Rows[0]["EffectiveDate"]).Year > 1900 ? Convert.ToDateTime(aData.Rows[0]["EffectiveDate"]).ToString("yyyy/MM/dd") : string.Empty;
+                            txtDocNO.Text = Convert.ToString(aData.Rows[0]["DocumentNo"]);
+
+                            txtREV.Text = Convert.ToString(aData.Rows[0]["Rev"]);
+                            txtDocName.Text = Convert.ToString(aData.Rows[0]["DocumentName"]);
+                            //ddlDocType.Text = Convert.ToString(aData.Rows[0]["DocumentType"]);
+                            //txtRevisionApplication.Text = Convert.ToString(aData.Rows[0]["RevisionApplication"]);
+                            //txtCheckingNotice.Text = Convert.ToString(aData.Rows[0]["CheckingNotice"]);
+
+                            txtDocumentObsolete.Text = Convert.ToString(aData.Rows[0]["DeletedDocumentOld"]);
+                            txtDocumentReference.Text = Convert.ToString(aData.Rows[0]["ReferenceDocument"]);
+                            //txtWordKey.Text = Convert.ToString(aData.Rows[0]["IndexWord"]);
+
+                            txtApplicationDate.Text = Convert.ToDateTime(aData.Rows[0]["ApplicationDate"]).ToString("yyyy/MM/dd HH:mm:ss");
+                            hidApplicableSite.Value = Convert.ToString(aData.Rows[0]["ApplicableSite"]);
+                            //hidApplicableBU.Value = Convert.ToString(aData.Rows[0]["ApplicableBU"]);
+                            //hidDepartmentCheck.Value = Convert.ToString(aData.Rows[0]["DepartmentCheck"]);
+                            hidFileName.Value = Convert.ToString(aData.Rows[0]["ContentFile"]);
+                            hidNeedRelease.Value = Convert.ToString(aData.Rows[0]["NeedReleaseFile"]);
+
+                            aListItem = ddlDepartment.Items.FindByValue(Convert.ToString(aData.Rows[0]["Department"]));
+                            if (aListItem != null)
+                            {
+                                ddlDepartment.SelectedValue = Convert.ToString(aData.Rows[0]["Department"]);
+                            }
+                        }
+
+                        #endregion
+                    }
+                }
+                #endregion
+            }
+        }
+    }
+}
